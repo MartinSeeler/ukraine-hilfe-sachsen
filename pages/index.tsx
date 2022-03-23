@@ -1,21 +1,32 @@
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
-import { qs } from "qs-props";
 import { FC } from "react";
 import SearchInner from "../components/search-inner";
-import { SearchContextProvider } from "../context/search-context";
+import {
+  performSearch,
+  SearchContextProvider,
+} from "../context/search-context";
+// @ts-ignore
+import * as ElasticAppSearch from "@elastic/app-search-javascript";
 
-const { getQueryStringProps } = qs(["q"] as const, "queries");
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const i18next = await serverSideTranslations(ctx.locale || "de", [
-    "translation",
-  ]);
-  const queryStringProps = getQueryStringProps(ctx);
+export const getServerSideProps: GetServerSideProps = async ({
+  locale,
+  query,
+}) => {
+  const i18next = await serverSideTranslations(locale || "de", ["translation"]);
+  console.log("getServerSideProps", { locale, query });
+  const client = ElasticAppSearch.createClient({
+    searchKey: "search-ycf9f6qz3944w8wbdq122b3v",
+    endpointBase:
+      "https://my-deployment-68ff1c.ent.europe-west3.gcp.cloud.es.io",
+    engineName: "ukraine-help",
+  });
+  const response = await performSearch(client, (query.q || "") as string);
   return {
     props: {
       ...i18next,
-      ...queryStringProps,
+      q: query.q || ("" as string),
+      response: JSON.parse(JSON.stringify(response || {})),
     },
   };
 };

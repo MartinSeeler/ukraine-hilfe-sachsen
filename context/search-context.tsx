@@ -1,4 +1,3 @@
-import { StringParam, useQueryParam, withDefault } from "next-query-params";
 import { useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 // @ts-ignore
@@ -68,10 +67,7 @@ export const SearchContextProvider: React.FC<{
 
   const [response, setResponse] = useState<any>(defaultResponse);
 
-  const [query, setQuery] = useQueryParam(
-    "q",
-    withDefault(StringParam, defaultQuery)
-  );
+  const [query, setQuery] = useState(defaultQuery);
 
   const updateQuery = (newQuery: string) => {
     setQuery(newQuery);
