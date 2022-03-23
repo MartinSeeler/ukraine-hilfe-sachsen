@@ -118,3 +118,4 @@
 // };
 
 // export default ListEntrySerpHit;
+export default {} as any;

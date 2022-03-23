@@ -181,3 +181,4 @@
 // };
 
 // export default QuickFacetButton;
+export default {} as any;
