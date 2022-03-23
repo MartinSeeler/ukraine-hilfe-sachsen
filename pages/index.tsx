@@ -8,6 +8,7 @@ import {
 } from "../context/search-context";
 // @ts-ignore
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
+import { pathOr } from "ramda";
 
 export const getServerSideProps: GetServerSideProps = async ({
   locale,
@@ -22,6 +23,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     engineName: "ukraine-help",
   });
   const response = await performSearch(client, (query.q || "") as string);
+  // console.log(
+  //   "hits total",
+  //   pathOr(0, ["info", "meta", "page", "total_results"], response)
+  // );
   return {
     props: {
       ...i18next,

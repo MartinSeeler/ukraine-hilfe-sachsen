@@ -6,7 +6,9 @@ import SearchContext from "../context/search-context";
 
 const SocialSeoTags: FC = () => {
   const { query, response } = useContext(SearchContext);
-  const [totalHits, setTotalHits] = useState(0);
+  const [totalHits, setTotalHits] = useState(
+    pathOr(0, ["info", "meta", "page", "total_results"], response)
+  );
   useEffect(() => {
     setTotalHits(
       pathOr(0, ["info", "meta", "page", "total_results"], response)
