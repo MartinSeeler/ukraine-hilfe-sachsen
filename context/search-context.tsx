@@ -10,10 +10,16 @@ const defaultState = {
 
 const SearchContext = createContext(defaultState);
 
-export const SearchContextProvider: React.FC = ({ children }) => {
+export const SearchContextProvider: React.FC<{ defaultQuery: string }> = ({
+  defaultQuery,
+  children,
+}) => {
   const { locale } = useRouter();
 
-  const [query, setQuery] = useQueryParam("q", withDefault(StringParam, ""));
+  const [query, setQuery] = useQueryParam(
+    "q",
+    withDefault(StringParam, defaultQuery)
+  );
 
   const updateQuery = (newQuery: string) => {
     setQuery(newQuery);
