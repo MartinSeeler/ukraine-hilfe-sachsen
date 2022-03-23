@@ -1,17 +1,13 @@
-import Document, { Head, Main, NextScript } from "next/document";
+import Document, { Head, Html, Main, NextScript } from "next/document";
 import React from "react";
 
 class MyDocument extends Document {
   render() {
     return (
-      <html>
+      <Html>
         <Head>
           <meta name="charset" content="UTF-8" />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
-          <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+          <meta httpEquiv="content-type" content="text/html; charset=utf-8" />
           {/* <meta name="robots" content="index,follow" /> */}
           <link
             rel="apple-touch-icon"
@@ -51,7 +47,7 @@ class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }
