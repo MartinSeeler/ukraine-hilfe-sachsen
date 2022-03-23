@@ -1,11 +1,11 @@
-import { t } from "i18next";
+import { useTranslation } from "next-i18next";
 import Head from "next/head";
 import React, { FC, useContext } from "react";
 import SearchContext from "../context/search-context";
 
 const SocialSeoTags: FC<{ totalHits: number }> = ({ totalHits }) => {
   const { query } = useContext(SearchContext);
-
+  const { t } = useTranslation();
   return (
     <Head>
       <meta charSet="utf-8" />
