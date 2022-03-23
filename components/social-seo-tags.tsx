@@ -1,22 +1,18 @@
 import { t } from "i18next";
-import { pathOr } from "ramda";
-import React, { FC } from "react";
-import { Helmet } from "react-helmet";
-import { useSearchParams } from "react-router-dom";
+import Head from "next/head";
+import React, { FC, useContext } from "react";
+import SearchContext from "../context/search-context";
 
 const SocialSeoTags: FC<{ totalHits: number }> = ({ totalHits }) => {
-  const [searchParams] = useSearchParams();
+  const { query } = useContext(SearchContext);
 
   return (
-    <Helmet>
+    <Head>
       <meta charSet="utf-8" />
       <meta http-equiv="content-type" content="text/html; charset=utf-8" />
       <title>
-        {searchParams.get("query") !== null && searchParams.get("query") !== ""
-          ? `${searchParams.get("query")} - ${t(
-              "homepage_title",
-              "Ukraine Hilfe Sachsen"
-            )}`
+        {query !== ""
+          ? `${query} - ${t("homepage_title", "Ukraine Hilfe Sachsen")}`
           : t("homepage_title", "Ukraine Hilfe Sachsen")}
       </title>
       <meta name="og:url" content="https://ukraine-hilfe-sachsen.info/" />
@@ -36,24 +32,21 @@ const SocialSeoTags: FC<{ totalHits: number }> = ({ totalHits }) => {
       <meta
         property="og:site_name"
         content={
-          searchParams.get("query") !== null && searchParams.get("query") !== ""
-            ? `${searchParams.get("query")} - ${t(
-                "homepage_title",
-                "Ukraine Hilfe Sachsen"
-              )}`
+          query !== ""
+            ? `${query} - ${t("homepage_title", "Ukraine Hilfe Sachsen")}`
             : t("homepage_title", "Ukraine Hilfe Sachsen")
         }
       />
       <meta
         name="description"
         content={
-          searchParams.get("query") !== null && searchParams.get("query")
+          query !== ""
             ? t(
                 "search_description",
                 "Wir haben {{hits_count}} hilfreiche Links für die Suche nach {{query}} in unserer Datenbank gefunden.",
                 {
                   hits_count: totalHits,
-                  query: searchParams.get("query"),
+                  query,
                 }
               )
             : t("homepage_subtitle", "Lorem ipsum ich bin ein Sub Title")
@@ -62,20 +55,20 @@ const SocialSeoTags: FC<{ totalHits: number }> = ({ totalHits }) => {
       <meta
         name="og:description"
         content={
-          searchParams.get("query") !== null && searchParams.get("query")
+          query !== ""
             ? t(
                 "search_description",
                 "Wir haben {{hits_count}} hilfreiche Links für die Suche nach {{query}} in unserer Datenbank gefunden.",
                 {
                   hits_count: totalHits,
-                  query: searchParams.get("query"),
+                  query,
                 }
               )
             : t("homepage_subtitle", "Lorem ipsum ich bin ein Sub Title")
         }
       />
       <link rel="canonical" href="https://ukraine-hilfe-sachsen.info/" />
-    </Helmet>
+    </Head>
   );
 };
 

@@ -7,12 +7,14 @@ import {
 } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useRouter } from "next/router";
 import { GetStaticProps } from "next/types";
+import { pathOr } from "ramda";
 import { FC, Fragment, useState } from "react";
 import Footer from "../components/footer";
 import LanguageTabs from "../components/language-tabs";
 import SearchInput from "../components/search-input";
+import SocialSeoTags from "../components/social-seo-tags";
+import { SearchContextProvider } from "../context/search-context";
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const i18next = await serverSideTranslations(locale || "de", ["translation"]);
@@ -21,24 +23,18 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   };
 };
 
-const Home: FC = (props) => {
+const SearchInner: FC = (props) => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
-  const router = useRouter();
-  const { pathname, asPath, query } = router;
-  const onChangeLocale = (nextLocale: string) => {
-    router.push({ pathname, query }, asPath, { locale: nextLocale });
-  };
   const { t } = useTranslation();
   return (
     <div className="">
-      {/* <SocialSeoTags
+      <SocialSeoTags
         totalHits={pathOr(
           0,
           ["info", "meta", "page", "total_results"],
-          searchResponse
+          {} //searchResponse
         )}
-      /> */}
+      />
       <div>
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -130,7 +126,7 @@ const Home: FC = (props) => {
             </div>
           </div>
 
-          {/* <SearchInput /> */}
+          <SearchInput />
           <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* <QuickFacetButton
               facetKey={"intents_who"}
@@ -212,4 +208,12 @@ const Home: FC = (props) => {
   );
 };
 
-export default Home;
+const Search: FC = () => {
+  return (
+    <SearchContextProvider>
+      <SearchInner />
+    </SearchContextProvider>
+  );
+};
+
+export default Search;

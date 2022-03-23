@@ -1,9 +1,8 @@
 import { SearchIcon } from "@heroicons/react/outline";
-import { useRouter } from "next/router";
-import React, { FC, useEffect } from "react";
+import React, { FC, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useSearchQueryParams } from "../hooks/use-search-query-params";
+import SearchContext from "../context/search-context";
 
 type FormData = {
   query: string;
@@ -11,11 +10,10 @@ type FormData = {
 
 const SearchInput: FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { pathname, asPath, query } = router;
+  const { query, updateQuery } = useContext(SearchContext);
   const { register, handleSubmit, setValue } = useForm<FormData>({
     defaultValues: {
-      query: query.q || "",
+      query,
     },
   });
 
@@ -24,7 +22,7 @@ const SearchInput: FC = () => {
   }, [query, setValue]);
 
   const onSubmit = handleSubmit((data: FormData) => {
-    onChangeQuery(data.query);
+    updateQuery(data.query);
   });
 
   return (
