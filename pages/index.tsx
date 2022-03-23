@@ -8,15 +8,14 @@ import { FC } from "react";
 import styles from "../styles/Home.module.css";
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const i18next = await serverSideTranslations(locale || "de", ["translation"]);
   return {
-    props: {
-      ...(await serverSideTranslations(locale || "de", ["translation"])),
-    },
+    props: { ...i18next },
   };
 };
 
 const Home: FC = (props) => {
-  console.log(props);
+  // console.log(props);
   const router = useRouter();
   const { pathname, asPath, query } = router;
   const onChangeLocale = (nextLocale: string) => {

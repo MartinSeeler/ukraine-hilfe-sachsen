@@ -10,7 +10,7 @@ module.exports = {
   },
   use: [require("i18next-locize-backend/cjs")],
   serializeConfig: false, // because of the custom use i18next plugin
-  debug: process.env.NODE_ENV === "development",
+  debug: false, //process.env.NODE_ENV === "development",
   fallbackLng: "de",
   saveMissing: false, // process.env.NODE_ENV === "development",
   keySeparator: undefined,
