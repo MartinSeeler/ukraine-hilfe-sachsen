@@ -1,11 +1,5 @@
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import {
-  GetServerSideProps,
-  GetStaticPaths,
-  GetStaticProps,
-  InferGetServerSidePropsType,
-  InferGetStaticPropsType,
-} from "next/types";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
 import { qs } from "qs-props";
 import { FC } from "react";
 import SearchInner from "../components/search-inner";
