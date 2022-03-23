@@ -1,6 +1,6 @@
 import { HeartIcon } from "@heroicons/react/solid";
+import Link from "next/link";
 import React, { FC } from "react";
-import { Link } from "react-router-dom";
 
 const Footer: FC = () => {
   return (
@@ -26,11 +26,10 @@ const Footer: FC = () => {
         </p>
         <nav className="mt-2 flex flex-wrap justify-center" aria-label="Footer">
           <div className="px-5 py-2">
-            <Link
-              to="/impressum"
-              className="text-base text-gray-500 hover:text-gray-900"
-            >
-              Impressum
+            <Link href="/impressum">
+              <a className="text-base text-gray-500 hover:text-gray-900">
+                Impressum
+              </a>
             </Link>
           </div>
         </nav>

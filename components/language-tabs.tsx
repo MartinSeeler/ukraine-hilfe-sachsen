@@ -1,6 +1,6 @@
+import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
 
 const languageOptions = [
   { name: "Deutsch", flag: "de", code: "de" },
@@ -14,23 +14,11 @@ function classNames(...classes: string[]): string {
 }
 
 const LanguageTabs: FC = () => {
-  const { t, i18n } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [lang, setLang] = useState<string>(
-    () =>
-      languageOptions.find((option) => option.code === i18n.language)?.code ||
-      "de"
-  );
-
-  const onChangeLanguage = (lang: string) => {
-    setLang(lang);
-    i18n.changeLanguage(lang);
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      lang,
-    });
+  const router = useRouter();
+  const { pathname, asPath, query, locale } = router;
+  const onChangeLanguage = (nextLocale: string) => {
+    router.push({ pathname, query }, asPath, { locale: nextLocale });
   };
-
   return (
     <div>
       <div className="md:block">
@@ -40,12 +28,12 @@ const LanguageTabs: FC = () => {
               key={langOption.flag}
               onClick={() => onChangeLanguage(langOption.code)}
               className={classNames(
-                lang === langOption.code
+                locale === langOption.code
                   ? "bg-gray-200 text-gray-800"
                   : "text-gray-600 hover:text-gray-800",
                 "px-3 py-2 font-medium text-sm rounded-md"
               )}
-              aria-current={lang === langOption.code ? "page" : undefined}
+              aria-current={locale === langOption.code ? "page" : undefined}
             >
               <span className="hidden sm:inline-block mr-2">
                 {langOption.name}
