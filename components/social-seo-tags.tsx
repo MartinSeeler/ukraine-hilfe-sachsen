@@ -1,13 +1,17 @@
 import { useTranslation } from "next-i18next";
 import Head from "next/head";
-import React, { FC, useContext, useEffect } from "react";
+import { pathOr } from "ramda";
+import React, { FC, useContext, useEffect, useState } from "react";
 import SearchContext from "../context/search-context";
 
-const SocialSeoTags: FC<{ totalHits: number }> = ({ totalHits }) => {
-  const { query } = useContext(SearchContext);
+const SocialSeoTags: FC = () => {
+  const { query, response } = useContext(SearchContext);
+  const [totalHits, setTotalHits] = useState(0);
   useEffect(() => {
-    console.log("query", query);
-  }, [query]);
+    setTotalHits(
+      pathOr(0, ["info", "meta", "page", "total_results"], response)
+    );
+  }, [response]);
   const { t } = useTranslation();
   return (
     <Head>

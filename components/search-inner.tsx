@@ -1,16 +1,16 @@
-import { Transition, Dialog } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import {
-  XIcon,
-  SupportIcon,
   PlusIcon,
+  SupportIcon,
   TrashIcon,
+  XIcon,
 } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
-import { pathOr } from "ramda";
-import { FC, useState, Fragment } from "react";
+import { FC, Fragment, useState } from "react";
 import Footer from "./footer";
 import LanguageTabs from "./language-tabs";
 import SearchInput from "./search-input";
+import SerpHits from "./serp-hits";
 import SocialSeoTags from "./social-seo-tags";
 
 const SearchInner: FC = (props) => {
@@ -18,13 +18,7 @@ const SearchInner: FC = (props) => {
   const { t } = useTranslation();
   return (
     <div className="">
-      <SocialSeoTags
-        totalHits={pathOr(
-          0,
-          ["info", "meta", "page", "total_results"],
-          {} //searchResponse
-        )}
-      />
+      <SocialSeoTags />
       <div>
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -190,6 +184,7 @@ const SearchInner: FC = (props) => {
                   ))} */}
               </div>
             </aside>
+            <SerpHits />
           </div>
         </main>
       </div>

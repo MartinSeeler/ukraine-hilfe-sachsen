@@ -11,9 +11,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const i18next = await serverSideTranslations(ctx.locale || "de", [
     "translation",
   ]);
-  const props = getQueryStringProps(ctx);
+  const queryStringProps = getQueryStringProps(ctx);
   return {
-    props: { ...i18next, ...props },
+    props: {
+      ...i18next,
+      ...queryStringProps,
+    },
   };
 };
 
@@ -21,7 +24,10 @@ const Search: FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   props
 ) => {
   return (
-    <SearchContextProvider defaultQuery={props.q || ""}>
+    <SearchContextProvider
+      defaultQuery={props.q || ""}
+      defaultResponse={props.response}
+    >
       <SearchInner />
     </SearchContextProvider>
   );

@@ -30,6 +30,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@elastic/app-search-javascript@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@elastic/app-search-javascript/-/app-search-javascript-8.1.0.tgz#f6814ddffead7d597be41f6051017a714207a1cc"
+  integrity sha512-cSB8vamiSPaMhTA2ExE+DDtidYNSV6gZAVikbcucef3GIGS6cp9C/4UYXAGmTlH57ZBzRtsprfj71Osve7RoEA==
+  dependencies:
+    object-hash "^1.3.0"
+
 "@headlessui/react@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.5.0.tgz#483b44ba2c8b8d4391e1d2c863898d7dd0cc0296"
@@ -786,6 +793,11 @@ object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
+
+object-hash@^1.3.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-1.3.1.tgz#fde452098a951cb145f039bb7d455449ddc126df"
+  integrity sha512-OSuu/pU4ENM9kmREg0BdNrUDIl1heYa4mBZacJc+vVWz4GtAwu7jO8s4AIt2aGRUTqxykpWzI3Oqnsm13tTMDA==
 
 object-hash@^2.2.0:
   version "2.2.0"

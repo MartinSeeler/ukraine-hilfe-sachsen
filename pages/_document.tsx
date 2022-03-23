@@ -4,7 +4,7 @@ import React from "react";
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html className="min-h-screen bg-gray-100">
         <Head>
           <meta name="charset" content="UTF-8" />
           <meta httpEquiv="content-type" content="text/html; charset=utf-8" />
@@ -43,7 +43,7 @@ class MyDocument extends Document {
           <meta name="msapplication-TileColor" content="#2d89ef" />
           <meta name="theme-color" content="#ffffff" />
         </Head>
-        <body>
+        <body className="min-h-screen">
           <Main />
           <NextScript />
         </body>
