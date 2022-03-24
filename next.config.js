@@ -4,8 +4,8 @@ const { i18n } = require("./next-i18next.config");
 const { withSentryConfig } = require("@sentry/nextjs");
 
 /**
- * @type {import('next').NextConfig}
- **/
+ * @type {import("@sentry/nextjs/esm/config/types").ExportedNextConfig}
+ */
 const nextConfig = {
   i18n,
   async redirects() {
@@ -17,10 +17,6 @@ const nextConfig = {
       },
     ];
   },
-};
-
-const moduleExports = {
-  nextConfig,
 };
 
 const sentryWebpackPluginOptions = {
@@ -37,4 +33,4 @@ const sentryWebpackPluginOptions = {
 
 // Make sure adding Sentry options is the last code to run before exporting, to
 // ensure that your source maps include changes from all other Webpack plugins
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
