@@ -1,16 +1,8 @@
 // @ts-ignore
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
+import * as Sentry from "@sentry/react";
 import { useRouter } from "next/router";
-import {
-  map,
-  keysIn,
-  filter,
-  pick,
-  mergeAll,
-  propOr,
-  chain,
-  pathOr,
-} from "ramda";
+import { chain, filter, keysIn, map, mergeAll, pathOr, pick } from "ramda";
 import { isEmptyString, isNonEmptyArray, renameKeysWith } from "ramda-adjunct";
 import { createContext, useEffect, useState } from "react";
 
@@ -92,8 +84,16 @@ export const performSearch = (
   activeValFilters: ActiveValFilters,
   locale: string
 ) => {
-  console.log("performSearch", query, activeValFilters);
-  return client.search(query, {
+  const transaction = Sentry.startTransaction({
+    name: "search",
+    description: "searchInAppSearch",
+    data: {
+      query,
+      activeValFilters,
+      locale,
+    },
+  });
+  const searchPromise = client.search(query, {
     facets: {
       intents_who: {
         type: "value",
@@ -130,6 +130,20 @@ export const performSearch = (
     },
     precision: 3,
   });
+  searchPromise
+    .then(
+      (res: any) => {
+        transaction.setStatus("success");
+      },
+      (err: any) => {
+        transaction.setStatus("failure");
+        Sentry.captureException(err);
+      }
+    )
+    .finally(() => {
+      transaction.finish();
+    });
+  return searchPromise;
 };
 
 export const generateAnalyticsTags: (
