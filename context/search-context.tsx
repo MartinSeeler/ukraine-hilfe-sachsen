@@ -199,11 +199,12 @@ export const SearchContextProvider: React.FC<{
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     defaultActiveValFilters
   );
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearching, setIsSearching] = useState(true);
 
   const updateQuery = (newQuery: string) => {
     const newQueryObj = { q: newQuery };
     setQuery(newQuery);
+    setIsSearching(true);
     push(
       { pathname, query: isEmptyString(newQuery) ? {} : newQueryObj },
       undefined,
@@ -227,6 +228,7 @@ export const SearchContextProvider: React.FC<{
       [key]: [],
     };
     setActiveValFilters(newActiveValFilters);
+    setIsSearching(true);
     push(
       {
         pathname,
@@ -255,6 +257,7 @@ export const SearchContextProvider: React.FC<{
         : [value],
     };
     setActiveValFilters(newActiveValFilters);
+    setIsSearching(true);
     push(
       {
         pathname,
@@ -274,6 +277,7 @@ export const SearchContextProvider: React.FC<{
   const onReset = () => {
     setActiveValFilters({});
     setQuery("");
+    setIsSearching(true);
     push(
       {
         pathname,
