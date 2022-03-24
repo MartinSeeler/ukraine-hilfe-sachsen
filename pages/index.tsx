@@ -28,7 +28,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   const response = await performSearch(
     client,
     (query.q || "") as string,
-    activeValFilters
+    activeValFilters,
+    locale || "de"
   );
   return {
     props: {

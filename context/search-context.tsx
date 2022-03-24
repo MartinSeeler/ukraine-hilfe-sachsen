@@ -1,7 +1,16 @@
 // @ts-ignore
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
 import { useRouter } from "next/router";
-import { map, keysIn, filter, pick, mergeAll, propOr, chain } from "ramda";
+import {
+  map,
+  keysIn,
+  filter,
+  pick,
+  mergeAll,
+  propOr,
+  chain,
+  pathOr,
+} from "ramda";
 import { isEmptyString, isNonEmptyArray, renameKeysWith } from "ramda-adjunct";
 import { createContext, useEffect, useState } from "react";
 
@@ -80,7 +89,8 @@ const SearchContext = createContext(defaultState);
 export const performSearch = (
   client: any,
   query: string,
-  activeValFilters: ActiveValFilters
+  activeValFilters: ActiveValFilters,
+  locale: string
 ) => {
   console.log("performSearch", query, activeValFilters);
   return client.search(query, {
@@ -115,19 +125,33 @@ export const performSearch = (
         keysIn(activeValFilters)
       ),
     },
-    //   filters: {
-    //     all: Object.entries(facets).flatMap(([k, vs]) => {
-    //       return vs.map((v) => {
-    //         return { [k.replace("valfilter.", "")]: v };
-    //       });
-    //     }),
-    //   },
-    //   analytics: {
-    //     tags: generateAnalyticsTags(facets, lang),
-    //   },
+    analytics: {
+      tags: generateAnalyticsTags(activeValFilters, locale),
+    },
     precision: 3,
   });
 };
+
+export const generateAnalyticsTags: (
+  activeValFilters: ActiveValFilters,
+  locale: string
+) => string[] = (activeValFilters, lang) =>
+  process.env.NODE_ENV === "production"
+    ? [
+        "ukraine-hilfe-sachsen",
+        ...chain((k: string) => {
+          return map(
+            (v) =>
+              `filter_${k}_${v
+                .toLowerCase()
+                .replace(/\s/g, "_")
+                .replace(/[^a-z0-9]/g, "")}`,
+            activeValFilters[k]
+          );
+        }, keysIn(activeValFilters)),
+        "uhs-lang-" + lang,
+      ]
+    : ["uhs-dev"];
 
 export type ActiveValFilters = { [facetKey: string]: string[] };
 export type UrlParsedValues = { [key: string]: string | string[] | undefined };
@@ -176,7 +200,6 @@ export const SearchContextProvider: React.FC<{
     defaultActiveValFilters
   );
   const [isSearching, setIsSearching] = useState(false);
-  const [initComplete, setInitComplete] = useState(false);
 
   const updateQuery = (newQuery: string) => {
     const newQueryObj = { q: newQuery };
@@ -191,23 +214,11 @@ export const SearchContextProvider: React.FC<{
   };
 
   useEffect(() => {
-    const newQuery: string = propOr("", "q", urlQuery);
-    setQuery(newQuery);
-    const newActiveValFilters = parseActiveValFiltersFromQuery(urlQuery);
-    setActiveValFilters(newActiveValFilters);
-    if (initComplete) {
-      setIsSearching(true);
-      performSearch(client, newQuery, newActiveValFilters)
-        .then((resp: any) => {
-          setResponse(resp);
-        })
-        .finally(() => {
-          setIsSearching(false);
-        });
-    } else {
-      setInitComplete(true);
-    }
-  }, [locale, urlQuery]);
+    setQuery(defaultQuery);
+    setActiveValFilters(defaultActiveValFilters);
+    setResponse(defaultResponse);
+    setIsSearching(false);
+  }, [defaultQuery, defaultResponse, defaultActiveValFilters]);
 
   const onResetFacetByKey = (key: string) => {
     const newActiveValFilters = {
@@ -272,16 +283,16 @@ export const SearchContextProvider: React.FC<{
   };
 
   const onSerpClick = (docId: string) => {
-    client;
-    //     .click({
-    //       query,
-    //       requestId,
-    //       documentId: entry.data.id.raw,
-    //       tags: generateAnalyticsTags(facets, lang),
-    //     })
-    //     .catch((e: any) => {
-    //       console.error("Failed to submit SERP click", e);
-    //     });
+    client
+      .click({
+        query,
+        requestId: pathOr("-1", ["info", "meta", "request_id"], response),
+        documentId: docId,
+        tags: generateAnalyticsTags(activeValFilters, locale || "de"),
+      })
+      .catch((e: any) => {
+        console.error("Failed to submit SERP click", e);
+      });
   };
   return (
     <SearchContext.Provider
