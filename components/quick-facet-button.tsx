@@ -3,7 +3,7 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import { XIcon } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import { pathOr } from "ramda";
-import React, { FC, Fragment, useContext, useState } from "react";
+import React, { FC, Fragment, useContext, useEffect, useState } from "react";
 import SearchContext from "../context/search-context";
 import { ValueFacetEntry } from "./value-facet";
 
@@ -15,17 +15,18 @@ const QuickFacetButton: FC<{
 }> = (props) => {
   const { t } = useTranslation();
 
-  const { response } = useContext(SearchContext);
+  const { response, activeValFilters, onResetFacetByKey } =
+    useContext(SearchContext);
 
-  const [currentValues, setCurrentValues] = useState<string[]>([]);
+  const [currentValues, setCurrentValues] = useState<string[]>(
+    activeValFilters[props.facetKey] || []
+  );
   const [open, setOpen] = useState(false);
 
-  // const searchResponse = useRecoilValue(serpHitsState);
-
-  // useEffect(() => {
-  //   setCurrentValues(facets[`valfilter.${props.facetKey}`] || []);
-  //   setOpen(false);
-  // }, [facets, props.facetKey]);
+  useEffect(() => {
+    setCurrentValues(activeValFilters[props.facetKey] || []);
+    setOpen(false);
+  }, [activeValFilters, props.facetKey]);
 
   return (
     <button
@@ -36,7 +37,7 @@ const QuickFacetButton: FC<{
       }
       onClick={() => {
         if (currentValues.length > 0) {
-          // onResetFacetByKey(props.facetKey);
+          onResetFacetByKey(props.facetKey);
         } else {
           setOpen(true);
         }

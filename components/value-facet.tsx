@@ -16,7 +16,7 @@ export const ValueFacetEntry: FC<{
   selected: boolean;
 }> = ({ facetKey: facetId, facetValue: value, count, selected }) => {
   const { t } = useTranslation();
-  // const { onValueFacetClick } = useSearchQueryParams();
+  const { onValueFacetClick } = useContext(SearchContext);
 
   return (
     <li
@@ -24,7 +24,7 @@ export const ValueFacetEntry: FC<{
         "w-full flex relative px-4 py-2 cursor-pointer group " +
         (selected ? "bg-blue-50" : "bg-white hover:bg-gray-50")
       }
-      // onClick={() => onValueFacetClick(facetId, value)}
+      onClick={() => onValueFacetClick(facetId, value)}
     >
       {selected && (
         <div className="absolute inset-y-0 left-0 w-0.5 bg-blue-600" />
@@ -91,6 +91,7 @@ export const MobileValueFacet: FC<{
   entries: { value: string; count: number }[];
 }> = ({ facetId, facetName, entries }) => {
   const { t } = useTranslation();
+  const { activeValFilters } = useContext(SearchContext);
   return (
     <Disclosure as="div" className="border-t border-gray-200 pt-4 pb-4">
       {({ open }) => (
@@ -116,14 +117,20 @@ export const MobileValueFacet: FC<{
               {entries.map((option: { value: string; count: number }) => (
                 <ValueFacetEntry
                   key={
-                    facetId + "-" + option.value + "-" + option.count + "-"
-                    // paramValues.includes(option.value)
+                    facetId +
+                    "-" +
+                    option.value +
+                    "-" +
+                    option.count +
+                    "-" +
+                    (activeValFilters[facetId]?.includes(option.value) ?? false)
                   }
                   facetKey={facetId}
                   facetValue={option.value}
                   count={option.count}
-                  selected={false}
-                  // selected={paramValues.includes(option.value)}
+                  selected={
+                    activeValFilters[facetId]?.includes(option.value) ?? false
+                  }
                 />
               ))}
             </ul>

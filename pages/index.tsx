@@ -23,11 +23,13 @@ export const getServerSideProps: GetServerSideProps = async ({
     "public, s-maxage=3600, stale-while-revalidate=7200"
   );
   const i18next = await serverSideTranslations(locale || "de", ["translation"]);
-  console.log("getServerSideProps", { locale, query });
   const client = getClient();
   const activeValFilters = parseActiveValFiltersFromQuery(query);
-  console.log("activeValFilters", activeValFilters);
-  const response = await performSearch(client, (query.q || "") as string);
+  const response = await performSearch(
+    client,
+    (query.q || "") as string,
+    activeValFilters
+  );
   return {
     props: {
       ...i18next,

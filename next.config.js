@@ -7,5 +7,14 @@ const { i18n } = require("./next-i18next.config");
  **/
 const nextConfig = {
   i18n,
+  async redirects() {
+    return [
+      {
+        source: "/dresden",
+        destination: "/?valfilter.region_country_city=Dresden",
+        permanent: false,
+      },
+    ];
+  },
 };
 module.exports = nextConfig;

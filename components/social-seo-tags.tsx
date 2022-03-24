@@ -18,7 +18,7 @@ const SocialSeoTags: FC = () => {
   return (
     <Head>
       <meta charSet="utf-8" />
-      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <meta httpEquiv="content-type" content="text/html; charset=utf-8" />
       <title>
         {query !== ""
           ? `${query} - ${t("homepage_title", "Ukraine Hilfe Sachsen")}`

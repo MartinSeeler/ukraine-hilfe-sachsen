@@ -1,9 +1,9 @@
 // @ts-ignore
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
 import { useRouter } from "next/router";
-import { filter, keysIn, map, pick, propOr } from "ramda";
-import { isEmptyString, renameKeysWith } from "ramda-adjunct";
-import React, { createContext, useEffect, useState } from "react";
+import { map, keysIn, filter, pick, mergeAll, propOr, chain } from "ramda";
+import { isEmptyString, isNonEmptyArray, renameKeysWith } from "ramda-adjunct";
+import { createContext, useEffect, useState } from "react";
 
 export const getClient = () =>
   ElasticAppSearch.createClient({
@@ -70,12 +70,19 @@ const defaultState = {
   onSerpClick: (docId: string) => {},
   isSearching: false,
   activeValFilters: {} as ActiveValFilters,
+  onResetFacetByKey: (key: string) => {},
+  onValueFacetClick: (key: string, value: string) => {},
+  onReset: () => {},
 };
 
 const SearchContext = createContext(defaultState);
 
-export const performSearch = (client: any, query: string) => {
-  console.log(`Searching for "${query}"`);
+export const performSearch = (
+  client: any,
+  query: string,
+  activeValFilters: ActiveValFilters
+) => {
+  console.log("performSearch", query, activeValFilters);
   return client.search(query, {
     facets: {
       intents_who: {
@@ -101,6 +108,12 @@ export const performSearch = (client: any, query: string) => {
     },
     page: {
       size: 25,
+    },
+    filters: {
+      all: chain(
+        (k) => map((v) => ({ [k]: v }), activeValFilters[k]),
+        keysIn(activeValFilters)
+      ),
     },
     //   filters: {
     //     all: Object.entries(facets).flatMap(([k, vs]) => {
@@ -138,7 +151,16 @@ export const parseActiveValFiltersFromQuery: (
 export const facetsToQuery: (facets: ActiveValFilters) => {
   [key: string]: string;
 } = (facets) => {
-  return {};
+  const relevantKeys = filter(
+    (x: string) => facets[x] && isNonEmptyArray(facets[x]),
+    keysIn(facets)
+  );
+  const query: { [key: string]: string } = mergeAll(
+    map((k: string) => {
+      return { [`valfilter.${k}`]: facets[k].join(",") };
+    }, relevantKeys)
+  );
+  return query;
 };
 
 export const SearchContextProvider: React.FC<{
@@ -169,16 +191,14 @@ export const SearchContextProvider: React.FC<{
   };
 
   useEffect(() => {
-    console.log("searchParamsChanged", { locale, urlQuery });
     const newQuery: string = propOr("", "q", urlQuery);
     setQuery(newQuery);
     const newActiveValFilters = parseActiveValFiltersFromQuery(urlQuery);
     setActiveValFilters(newActiveValFilters);
     if (initComplete) {
       setIsSearching(true);
-      performSearch(client, newQuery)
+      performSearch(client, newQuery, newActiveValFilters)
         .then((resp: any) => {
-          console.log(resp);
           setResponse(resp);
         })
         .finally(() => {
@@ -188,6 +208,68 @@ export const SearchContextProvider: React.FC<{
       setInitComplete(true);
     }
   }, [locale, urlQuery]);
+
+  const onResetFacetByKey = (key: string) => {
+    const newActiveValFilters = {
+      ...activeValFilters,
+      [key]: [],
+    };
+    push(
+      {
+        pathname,
+        query: {
+          ...(isEmptyString(query) ? {} : { q: query }),
+          ...facetsToQuery(newActiveValFilters),
+        },
+      },
+      undefined,
+      {
+        locale,
+        scroll: false,
+      }
+    );
+  };
+
+  const onValueFacetClick = (key: string, value: string) => {
+    // newActiveValFilters is a copy of activeValFilters, where either the value is dropped or added, based
+    // on whether it is already present in the array
+    const newActiveValFilters = {
+      ...activeValFilters,
+      [key]: activeValFilters[key]
+        ? activeValFilters[key].includes(value)
+          ? filter((v: string) => v !== value, activeValFilters[key])
+          : [...activeValFilters[key], value]
+        : [value],
+    };
+    push(
+      {
+        pathname,
+        query: {
+          ...(isEmptyString(query) ? {} : { q: query }),
+          ...facetsToQuery(newActiveValFilters),
+        },
+      },
+      undefined,
+      {
+        locale,
+        scroll: false,
+      }
+    );
+  };
+
+  const onReset = () => {
+    push(
+      {
+        pathname,
+        query: {},
+      },
+      undefined,
+      {
+        locale,
+        scroll: false,
+      }
+    );
+  };
 
   const onSerpClick = (docId: string) => {
     client;
@@ -211,6 +293,9 @@ export const SearchContextProvider: React.FC<{
         isSearching,
         onSerpClick,
         activeValFilters,
+        onResetFacetByKey,
+        onValueFacetClick,
+        onReset,
       }}
     >
       {children}

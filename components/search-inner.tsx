@@ -8,7 +8,10 @@ import {
 } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import Link from "next/link";
-import { FC, Fragment, useState } from "react";
+import { isEmpty } from "ramda";
+import { isEmptyString } from "ramda-adjunct";
+import { FC, Fragment, useContext, useState } from "react";
+import SearchContext from "../context/search-context";
 import DesktopFacetBlock from "./desktop-facet-block";
 import Footer from "./footer";
 import LanguageTabs from "./language-tabs";
@@ -21,6 +24,7 @@ import SocialSeoTags from "./social-seo-tags";
 const SearchInner: FC = (props) => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const { t } = useTranslation();
+  const { onReset, activeValFilters, query } = useContext(SearchContext);
   return (
     <div className="">
       <SocialSeoTags />
@@ -141,8 +145,8 @@ const SearchInner: FC = (props) => {
             </button>
             <button
               type="button"
-              // onClick={onReset}
-              // disabled={isMatchAllQuery}
+              onClick={onReset}
+              disabled={isEmptyString(query) && isEmpty(activeValFilters)}
               className="disabled:cursor-not-allowed disabled:opacity-50 flex flex-1 items-center px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none"
             >
               <span className="flex flex-grow">
