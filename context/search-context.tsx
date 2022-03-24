@@ -2,12 +2,52 @@ import { useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 // @ts-ignore
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
+import { pathOr, propOr } from "ramda";
+
+export type SerpHit = {
+  data: {
+    id: {
+      raw: string;
+    };
+    title_de: {
+      snippet: string;
+    };
+    title_en: {
+      snippet: string;
+    };
+    title_ru: {
+      snippet: string;
+    };
+    title_uk: {
+      snippet: string;
+    };
+    description_de: {
+      snippet: string;
+    };
+    description_en: {
+      snippet: string;
+    };
+    description_ru: {
+      snippet: string;
+    };
+    description_ua: {
+      snippet: string;
+    };
+    page_languages: {
+      raw: string[];
+    };
+    url: {
+      raw: string;
+    };
+  };
+};
 
 const defaultState = {
   query: "",
   updateQuery: (newQuery: string) => {},
   locale: "de",
   response: {},
+  isSearching: false,
 };
 
 const SearchContext = createContext(defaultState);
@@ -63,22 +103,39 @@ export const SearchContextProvider: React.FC<{
       "https://my-deployment-68ff1c.ent.europe-west3.gcp.cloud.es.io",
     engineName: "ukraine-help",
   });
-  const { locale } = useRouter();
+  const { locale, pathname, query: urlQuery, push } = useRouter();
 
   const [response, setResponse] = useState<any>(defaultResponse);
 
   const [query, setQuery] = useState(defaultQuery);
+  const [isSearching, setIsSearching] = useState(false);
+  const [initComplete, setInitComplete] = useState(false);
 
   const updateQuery = (newQuery: string) => {
-    setQuery(newQuery);
+    push({ pathname, query: { q: newQuery } }, undefined, {
+      locale,
+      scroll: true,
+    });
   };
 
   useEffect(() => {
-    performSearch(client, query).then((resp: any) => {
-      console.log(resp);
-      setResponse(resp);
-    });
-  }, [query]);
+    console.log("searchParamsChanged", { locale, urlQuery });
+    const newQuery: string = propOr("", "q", urlQuery);
+    setQuery(newQuery);
+    if (initComplete) {
+      setIsSearching(true);
+      performSearch(client, newQuery)
+        .then((resp: any) => {
+          console.log(resp);
+          setResponse(resp);
+        })
+        .finally(() => {
+          setIsSearching(false);
+        });
+    } else {
+      setInitComplete(true);
+    }
+  }, [locale, urlQuery]);
 
   return (
     <SearchContext.Provider
@@ -87,6 +144,7 @@ export const SearchContextProvider: React.FC<{
         updateQuery,
         locale: locale || "de",
         response,
+        isSearching,
       }}
     >
       {children}
