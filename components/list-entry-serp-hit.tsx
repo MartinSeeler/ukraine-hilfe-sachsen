@@ -1,34 +1,19 @@
 import { ChevronRightIcon, TranslateIcon } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
-import React, { FC } from "react";
-import { SerpHit } from "../context/search-context";
+import React, { FC, useContext } from "react";
+import SearchContext, { SerpHit } from "../context/search-context";
 
 const ListEntrySerpHit: FC<{
   entry: SerpHit;
 }> = ({ entry }) => {
-  const { t, i18n } = useTranslation();
-  // const client = useRecoilValue(searchClientState);
-  // const [searchParams] = useSearchParams();
-  // const { query, facets, lang } = useSearchQueryParams();
-  // const handleClick = () => {
-  //  client
-  //     .click({
-  //       query,
-  //       requestId,
-  //       documentId: entry.data.id.raw,
-  //       tags: generateAnalyticsTags(facets, lang),
-  //     })
-  //     .catch((e: any) => {
-  //       console.error("Failed to submit SERP click", e);
-  //     });
-  // };
-
+  const { i18n } = useTranslation();
+  const { onSerpClick } = useContext(SearchContext);
   return (
     <li>
       <a
         href={entry.data.url.raw}
         target="_blank"
-        // onClick={handleClick}
+        onClick={() => onSerpClick(entry.data.id.raw)}
         rel="noopener noreferrer nofollow"
         className="block hover:bg-gray-50"
       >

@@ -1,4 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { MapIcon, TagIcon, UserIcon } from "@heroicons/react/outline";
 import {
   PlusIcon,
   SupportIcon,
@@ -6,9 +7,13 @@ import {
   XIcon,
 } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
+import Link from "next/link";
 import { FC, Fragment, useState } from "react";
+import DesktopFacetBlock from "./desktop-facet-block";
 import Footer from "./footer";
 import LanguageTabs from "./language-tabs";
+import MobileFacetsBlock from "./mobile-facets-block";
+import QuickFacetButton from "./quick-facet-button";
 import SearchInput from "./search-input";
 import SerpHits from "./serp-hits";
 import SocialSeoTags from "./social-seo-tags";
@@ -63,19 +68,7 @@ const SearchInner: FC = (props) => {
                   </button>
                 </div>
 
-                {/* Filters */}
-                {/* <form className="mt-4">
-                    {filters.map((section) => (
-                      <MobileValueFacet
-                        key={section.name}
-                        entries={
-                          searchResponse.info?.facets[section.id][0]?.data || []
-                        }
-                        facetId={section.id}
-                        facetName={section.name}
-                      />
-                    ))}
-                  </form> */}
+                <MobileFacetsBlock />
               </div>
             </Transition.Child>
           </Dialog>
@@ -87,12 +80,11 @@ const SearchInner: FC = (props) => {
         <main className="max-w-2xl mx-auto px-4 py-5 sm:py-12 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="pb-10 sm:flex sm:items-center sm:justify-between">
             <div className="">
-              <h1
-                className="text-3xl inline-flex md:text-4xl font-extrabold tracking-tight text-gray-900 hover:underline hover:underline-offset-2 hover:cursor-pointer"
-                // onClick={onReset}
-              >
-                {t("homepage_title", "Ukraine Hilfe Sachsen")}
-              </h1>
+              <Link href="/">
+                <h1 className="text-3xl inline-flex md:text-4xl font-extrabold tracking-tight text-gray-900 hover:underline hover:underline-offset-2 hover:cursor-pointer">
+                  {t("homepage_title", "Ukraine Hilfe Sachsen")}
+                </h1>
+              </Link>
               <p className="mt-4 text-base text-gray-500">
                 {t("homepage_subtitle", "Lorem ipsum ich bin ein Sub Title")}
               </p>
@@ -112,24 +104,24 @@ const SearchInner: FC = (props) => {
 
           <SearchInput />
           <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* <QuickFacetButton
-                facetKey={"intents_who"}
-                facetName={"Ich bin..."}
-                bgColor="bg-blue-600"
-                icon={UserIcon}
-              />
-              <QuickFacetButton
-                facetKey={"region_country_city"}
-                facetName={"Region / Stadt"}
-                bgColor="bg-amber-500"
-                icon={MapIcon}
-              />
-              <QuickFacetButton
-                facetKey={"intents_level_one"}
-                facetName={"Ich möchte..."}
-                bgColor="bg-green-600"
-                icon={TagIcon}
-              /> */}
+            <QuickFacetButton
+              facetKey={"intents_who"}
+              facetName={"Ich bin..."}
+              bgColor="bg-blue-600"
+              icon={UserIcon}
+            />
+            <QuickFacetButton
+              facetKey={"region_country_city"}
+              facetName={"Region / Stadt"}
+              bgColor="bg-amber-500"
+              icon={MapIcon}
+            />
+            <QuickFacetButton
+              facetKey={"intents_level_one"}
+              facetName={"Ich möchte..."}
+              bgColor="bg-green-600"
+              icon={TagIcon}
+            />
           </div>
           <span className="pt-5 flex gap-x-3 lg:hidden">
             <button
@@ -165,25 +157,7 @@ const SearchInner: FC = (props) => {
             </button>
           </span>
           <div className="pt-6 lg:pt-12 lg:grid lg:grid-cols-4 lg:gap-x-8">
-            <aside>
-              <h2 className="sr-only">{t("filters_title", "Filter")}</h2>
-
-              <div className="hidden lg:block">
-                <span className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("filters_more", "Mehr Filter")}
-                </span>
-                {/* {filters.map((section) => (
-                    <DesktopValueFacet
-                      key={section.name}
-                      entries={
-                        searchResponse.info?.facets[section.id][0]?.data || []
-                      }
-                      facetId={section.id}
-                      facetName={section.name}
-                    />
-                  ))} */}
-              </div>
-            </aside>
+            <DesktopFacetBlock />
             <SerpHits />
           </div>
         </main>
