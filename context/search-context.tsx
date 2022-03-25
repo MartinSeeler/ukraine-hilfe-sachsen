@@ -256,7 +256,8 @@ const parseSearchResults = (response: any, locale: string) => {
       ),
       url: pathOr("", ["data", "url", "raw"], hit),
       page_languages: pathOr([], ["data", "page_languages", "raw"], hit),
-      official: pathOr(false, ["data", "official", "raw"], hit),
+      official:
+        pathOr<string>("false", ["data", "official", "raw"], hit) === "true",
     }),
     propOr<object[], string, any>([], "results", response)
   );

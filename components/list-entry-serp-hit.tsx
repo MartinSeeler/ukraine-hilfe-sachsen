@@ -1,4 +1,8 @@
-import { ChevronRightIcon, TranslateIcon } from "@heroicons/react/solid";
+import {
+  BadgeCheckIcon,
+  ChevronRightIcon,
+  TranslateIcon,
+} from "@heroicons/react/solid";
 import React, { FC, useContext } from "react";
 import SearchContext, { SearchResult } from "../context/search-context";
 
@@ -18,13 +22,21 @@ const ListEntrySerpHit: FC<{
         <div className="px-4 py-4 flex items-center sm:px-6">
           <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
             <div className="">
-              <div className="flex text-sm truncate">
+              <div className="flex text-sm truncate items-center space-x-2">
                 <p
                   className="font-medium text-blue-600 truncate lg:text-lg"
                   dangerouslySetInnerHTML={{
                     __html: entry.title,
                   }}
                 />
+                {entry.official === true && (
+                  <div className="flex text-sm leading-5 text-gray-500">
+                    <BadgeCheckIcon
+                      className="w-5 h-5 text-blue-500"
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
                 {/* <p className="ml-1 flex-shrink-0 font-normal text-gray-500">
                           in foo
                         </p> */}
@@ -36,6 +48,9 @@ const ListEntrySerpHit: FC<{
                     __html: entry.description,
                   }}
                 />
+              </div>
+              <div className="mt-2 flex">
+                <p className="text-xs text-blue-600 truncate">{entry.url}</p>
               </div>
               <div className="mt-3 flex items-center text-sm text-gray-500">
                 <TranslateIcon
