@@ -21,10 +21,11 @@ import SearchInput from "./search-input";
 import SerpHits from "./serp-hits";
 import SocialSeoTags from "./social-seo-tags";
 
-const SearchInner: FC = (props) => {
+const SearchInner: FC = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const { t } = useTranslation();
-  const { onReset, activeValFilters, query } = useContext(SearchContext);
+  const { onReset, activeValFilters, query, searchResults } =
+    useContext(SearchContext);
   return (
     <div className="">
       <SocialSeoTags />

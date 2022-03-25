@@ -2,7 +2,16 @@
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
 import * as Sentry from "@sentry/react";
 import { useRouter } from "next/router";
-import { chain, filter, keysIn, map, mergeAll, pathOr, pick } from "ramda";
+import {
+  chain,
+  filter,
+  keysIn,
+  map,
+  mergeAll,
+  pathOr,
+  pick,
+  propOr,
+} from "ramda";
 import { isEmptyString, isNonEmptyArray, renameKeysWith } from "ramda-adjunct";
 import { createContext, useEffect, useState } from "react";
 
@@ -31,6 +40,7 @@ export type SearchResult = {
   description: string;
   url: string;
   page_languages: string[];
+  official: boolean;
 };
 
 const resultFieldLocalMapping: {
@@ -64,6 +74,9 @@ export const getResultFieldsByLocale = (locale: string) => ({
   url: {
     raw: {},
   },
+  official: {
+    raw: {},
+  },
   [resultFieldLocalMapping[locale]?.title || "title_de"]: {
     snippet: {
       size: 256,
@@ -78,44 +91,6 @@ export const getResultFieldsByLocale = (locale: string) => ({
   },
 });
 
-export type SerpHit = {
-  data: {
-    id: {
-      raw: string;
-    };
-    title_de: {
-      snippet: string;
-    };
-    title_en: {
-      snippet: string;
-    };
-    title_ru: {
-      snippet: string;
-    };
-    title_uk: {
-      snippet: string;
-    };
-    description_de: {
-      snippet: string;
-    };
-    description_en: {
-      snippet: string;
-    };
-    description_ru: {
-      snippet: string;
-    };
-    description_ua: {
-      snippet: string;
-    };
-    page_languages: {
-      raw: string[];
-    };
-    url: {
-      raw: string;
-    };
-  };
-};
-
 const defaultState = {
   query: "",
   updateQuery: (newQuery: string) => {},
@@ -127,6 +102,8 @@ const defaultState = {
   onResetFacetByKey: (key: string) => {},
   onValueFacetClick: (key: string, value: string) => {},
   onReset: () => {},
+  searchResults: [] as SearchResult[],
+  totalHits: 0,
 };
 
 const SearchContext = createContext(defaultState);
@@ -255,19 +232,55 @@ export const facetsToQuery: (facets: ActiveValFilters) => {
   return query;
 };
 
+const parseSearchResults = (response: any, locale: string) => {
+  return map<object, SearchResult>(
+    (hit: object) => ({
+      id: pathOr("", ["data", "id", "raw"], hit),
+      title: pathOr(
+        "",
+        [
+          "data",
+          resultFieldLocalMapping[locale]?.title || "title_de",
+          "snippet",
+        ],
+        hit
+      ),
+      description: pathOr(
+        "",
+        [
+          "data",
+          resultFieldLocalMapping[locale]?.description || "description_de",
+          "snippet",
+        ],
+        hit
+      ),
+      url: pathOr("", ["data", "url", "raw"], hit),
+      page_languages: pathOr([], ["data", "page_languages", "raw"], hit),
+      official: pathOr(false, ["data", "official", "raw"], hit),
+    }),
+    propOr<object[], string, any>([], "results", response)
+  );
+};
+
 export const SearchContextProvider: React.FC<{
   defaultQuery: string;
   defaultActiveValFilters: ActiveValFilters;
   defaultResponse: any;
 }> = ({ defaultQuery, defaultResponse, defaultActiveValFilters, children }) => {
   const client = getClient();
-  const { locale, pathname, query: urlQuery, push } = useRouter();
+  const { locale, pathname, push } = useRouter();
   const [response, setResponse] = useState<any>(defaultResponse);
   const [query, setQuery] = useState(defaultQuery);
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     defaultActiveValFilters
   );
   const [isSearching, setIsSearching] = useState(true);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>(
+    parseSearchResults(defaultResponse, locale || "de")
+  );
+  const [totalHits, setTotalHits] = useState(
+    pathOr(0, ["info", "meta", "page", "total_results"], defaultResponse)
+  );
 
   const updateQuery = (newQuery: string) => {
     const newQueryObj = { q: newQuery };
@@ -287,6 +300,10 @@ export const SearchContextProvider: React.FC<{
     setQuery(defaultQuery);
     setActiveValFilters(defaultActiveValFilters);
     setResponse(defaultResponse);
+    setSearchResults(parseSearchResults(defaultResponse, locale || "de"));
+    setTotalHits(
+      pathOr(0, ["info", "meta", "page", "total_results"], defaultResponse)
+    );
     setIsSearching(false);
   }, [defaultQuery, defaultResponse, defaultActiveValFilters]);
 
@@ -384,6 +401,8 @@ export const SearchContextProvider: React.FC<{
         onResetFacetByKey,
         onValueFacetClick,
         onReset,
+        searchResults,
+        totalHits,
       }}
     >
       {children}
