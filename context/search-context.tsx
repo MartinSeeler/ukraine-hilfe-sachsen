@@ -25,6 +25,59 @@ export const filters = [
   },
 ];
 
+export type SearchResult = {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  page_languages: string[];
+};
+
+const resultFieldLocalMapping: {
+  [locale: string]: { title: string; description: string };
+} = {
+  de: {
+    title: "title_de",
+    description: "description_de",
+  },
+  en: {
+    title: "title_en",
+    description: "description_en",
+  },
+  ru: {
+    title: "title_ru",
+    description: "description_ru",
+  },
+  uk: {
+    title: "title_uk",
+    description: "description_ua",
+  },
+};
+
+export const getResultFieldsByLocale = (locale: string) => ({
+  id: {
+    raw: {},
+  },
+  page_languages: {
+    raw: {},
+  },
+  url: {
+    raw: {},
+  },
+  [resultFieldLocalMapping[locale]?.title || "title_de"]: {
+    snippet: {
+      size: 256,
+      fallback: true,
+    },
+  },
+  [resultFieldLocalMapping[locale]?.description || "description_de"]: {
+    snippet: {
+      size: 256,
+      fallback: true,
+    },
+  },
+});
+
 export type SerpHit = {
   data: {
     id: {
@@ -128,6 +181,7 @@ export const performSearch = (
     analytics: {
       tags: generateAnalyticsTags(activeValFilters, locale),
     },
+    result_fields: getResultFieldsByLocale(locale),
     precision: 3,
   });
   searchPromise
