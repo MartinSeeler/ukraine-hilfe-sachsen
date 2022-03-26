@@ -31,6 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     activeValFilters,
     locale || "de"
   );
+  console.log(response.results[0]);
   return {
     props: {
       ...i18next,

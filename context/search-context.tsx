@@ -2,7 +2,18 @@
 import * as ElasticAppSearch from "@elastic/app-search-javascript";
 import * as Sentry from "@sentry/react";
 import { useRouter } from "next/router";
-import { chain, filter, keysIn, map, mergeAll, pathOr, pick } from "ramda";
+import {
+  chain,
+  filter,
+  includes,
+  keysIn,
+  map,
+  mergeAll,
+  pathOr,
+  pick,
+  propOr,
+  uniq,
+} from "ramda";
 import { isEmptyString, isNonEmptyArray, renameKeysWith } from "ramda-adjunct";
 import { createContext, useEffect, useState } from "react";
 
@@ -25,43 +36,73 @@ export const filters = [
   },
 ];
 
-export type SerpHit = {
-  data: {
-    id: {
-      raw: string;
-    };
-    title_de: {
-      snippet: string;
-    };
-    title_en: {
-      snippet: string;
-    };
-    title_ru: {
-      snippet: string;
-    };
-    title_uk: {
-      snippet: string;
-    };
-    description_de: {
-      snippet: string;
-    };
-    description_en: {
-      snippet: string;
-    };
-    description_ru: {
-      snippet: string;
-    };
-    description_ua: {
-      snippet: string;
-    };
-    page_languages: {
-      raw: string[];
-    };
-    url: {
-      raw: string;
-    };
-  };
+export type SearchResult = {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  page_languages: string[];
+  region: string[];
+  tags: string[];
+  official: boolean;
 };
+
+const resultFieldLocalMapping: {
+  [locale: string]: { title: string; description: string };
+} = {
+  de: {
+    title: "title_de",
+    description: "description_de",
+  },
+  en: {
+    title: "title_en",
+    description: "description_en",
+  },
+  ru: {
+    title: "title_ru",
+    description: "description_ru",
+  },
+  uk: {
+    title: "title_uk",
+    description: "description_ua",
+  },
+};
+
+export const getResultFieldsByLocale = (locale: string) => ({
+  id: {
+    raw: {},
+  },
+  page_languages: {
+    raw: {},
+  },
+  url: {
+    raw: {},
+  },
+  official: {
+    raw: {},
+  },
+  region: {
+    raw: {},
+  },
+  region_country_city: {
+    raw: {},
+  },
+  intents_level_one: {
+    raw: {},
+  },
+  [resultFieldLocalMapping[locale]?.title || "title_de"]: {
+    snippet: {
+      size: 256,
+      fallback: true,
+    },
+  },
+  [resultFieldLocalMapping[locale]?.description || "description_de"]: {
+    snippet: {
+      size: 256,
+      fallback: true,
+    },
+  },
+});
 
 const defaultState = {
   query: "",
@@ -74,6 +115,8 @@ const defaultState = {
   onResetFacetByKey: (key: string) => {},
   onValueFacetClick: (key: string, value: string) => {},
   onReset: () => {},
+  searchResults: [] as SearchResult[],
+  totalHits: 0,
 };
 
 const SearchContext = createContext(defaultState);
@@ -128,6 +171,7 @@ export const performSearch = (
     analytics: {
       tags: generateAnalyticsTags(activeValFilters, locale),
     },
+    result_fields: getResultFieldsByLocale(locale),
     precision: 3,
   });
   searchPromise
@@ -201,19 +245,66 @@ export const facetsToQuery: (facets: ActiveValFilters) => {
   return query;
 };
 
+const parseSearchResults = (response: any, locale: string) => {
+  return map<object, SearchResult>(
+    (hit: object) => ({
+      id: pathOr("", ["data", "id", "raw"], hit),
+      title: pathOr(
+        "",
+        [
+          "data",
+          resultFieldLocalMapping[locale]?.title || "title_de",
+          "snippet",
+        ],
+        hit
+      ),
+      description: pathOr(
+        "",
+        [
+          "data",
+          resultFieldLocalMapping[locale]?.description || "description_de",
+          "snippet",
+        ],
+        hit
+      ),
+      tags: pathOr([], ["data", "intents_level_one", "raw"], hit),
+      region: uniq(
+        filter(
+          (x) => x !== "Sachsen" && x !== "Deutschland",
+          [
+            ...pathOr([], ["data", "region", "raw"], hit),
+            ...pathOr([], ["data", "region_country_city", "raw"], hit),
+          ]
+        )
+      ),
+      url: pathOr("", ["data", "url", "raw"], hit),
+      page_languages: pathOr([], ["data", "page_languages", "raw"], hit),
+      official:
+        pathOr<string>("false", ["data", "official", "raw"], hit) === "true",
+    }),
+    propOr<object[], string, any>([], "results", response)
+  );
+};
+
 export const SearchContextProvider: React.FC<{
   defaultQuery: string;
   defaultActiveValFilters: ActiveValFilters;
   defaultResponse: any;
 }> = ({ defaultQuery, defaultResponse, defaultActiveValFilters, children }) => {
   const client = getClient();
-  const { locale, pathname, query: urlQuery, push } = useRouter();
+  const { locale, pathname, push } = useRouter();
   const [response, setResponse] = useState<any>(defaultResponse);
   const [query, setQuery] = useState(defaultQuery);
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     defaultActiveValFilters
   );
   const [isSearching, setIsSearching] = useState(true);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>(
+    parseSearchResults(defaultResponse, locale || "de")
+  );
+  const [totalHits, setTotalHits] = useState(
+    pathOr(0, ["info", "meta", "page", "total_results"], defaultResponse)
+  );
 
   const updateQuery = (newQuery: string) => {
     const newQueryObj = { q: newQuery };
@@ -233,6 +324,10 @@ export const SearchContextProvider: React.FC<{
     setQuery(defaultQuery);
     setActiveValFilters(defaultActiveValFilters);
     setResponse(defaultResponse);
+    setSearchResults(parseSearchResults(defaultResponse, locale || "de"));
+    setTotalHits(
+      pathOr(0, ["info", "meta", "page", "total_results"], defaultResponse)
+    );
     setIsSearching(false);
   }, [defaultQuery, defaultResponse, defaultActiveValFilters]);
 
@@ -330,6 +425,8 @@ export const SearchContextProvider: React.FC<{
         onResetFacetByKey,
         onValueFacetClick,
         onReset,
+        searchResults,
+        totalHits,
       }}
     >
       {children}

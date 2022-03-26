@@ -1,5 +1,10 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { MapIcon, TagIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  LocationMarkerIcon,
+  MapIcon,
+  TagIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 import {
   PlusIcon,
   SupportIcon,
@@ -21,10 +26,11 @@ import SearchInput from "./search-input";
 import SerpHits from "./serp-hits";
 import SocialSeoTags from "./social-seo-tags";
 
-const SearchInner: FC = (props) => {
+const SearchInner: FC = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const { t } = useTranslation();
-  const { onReset, activeValFilters, query } = useContext(SearchContext);
+  const { onReset, activeValFilters, query, searchResults } =
+    useContext(SearchContext);
   return (
     <div className="">
       <SocialSeoTags />
@@ -118,7 +124,7 @@ const SearchInner: FC = (props) => {
               facetKey={"region_country_city"}
               facetName={"Region / Stadt"}
               bgColor="bg-amber-500"
-              icon={MapIcon}
+              icon={LocationMarkerIcon}
             />
             <QuickFacetButton
               facetKey={"intents_level_one"}
