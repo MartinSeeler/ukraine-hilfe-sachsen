@@ -5,12 +5,14 @@ import { useRouter } from "next/router";
 import {
   chain,
   filter,
+  includes,
   keysIn,
   map,
   mergeAll,
   pathOr,
   pick,
   propOr,
+  uniq,
 } from "ramda";
 import { isEmptyString, isNonEmptyArray, renameKeysWith } from "ramda-adjunct";
 import { createContext, useEffect, useState } from "react";
@@ -40,6 +42,8 @@ export type SearchResult = {
   description: string;
   url: string;
   page_languages: string[];
+  region: string[];
+  tags: string[];
   official: boolean;
 };
 
@@ -75,6 +79,15 @@ export const getResultFieldsByLocale = (locale: string) => ({
     raw: {},
   },
   official: {
+    raw: {},
+  },
+  region: {
+    raw: {},
+  },
+  region_country_city: {
+    raw: {},
+  },
+  intents_level_one: {
     raw: {},
   },
   [resultFieldLocalMapping[locale]?.title || "title_de"]: {
@@ -253,6 +266,16 @@ const parseSearchResults = (response: any, locale: string) => {
           "snippet",
         ],
         hit
+      ),
+      tags: pathOr([], ["data", "intents_level_one", "raw"], hit),
+      region: uniq(
+        filter(
+          (x) => x !== "Sachsen" && x !== "Deutschland",
+          [
+            ...pathOr([], ["data", "region", "raw"], hit),
+            ...pathOr([], ["data", "region_country_city", "raw"], hit),
+          ]
+        )
       ),
       url: pathOr("", ["data", "url", "raw"], hit),
       page_languages: pathOr([], ["data", "page_languages", "raw"], hit),

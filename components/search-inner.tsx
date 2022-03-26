@@ -1,5 +1,10 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { MapIcon, TagIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  LocationMarkerIcon,
+  MapIcon,
+  TagIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 import {
   PlusIcon,
   SupportIcon,
@@ -119,7 +124,7 @@ const SearchInner: FC = () => {
               facetKey={"region_country_city"}
               facetName={"Region / Stadt"}
               bgColor="bg-amber-500"
-              icon={MapIcon}
+              icon={LocationMarkerIcon}
             />
             <QuickFacetButton
               facetKey={"intents_level_one"}
