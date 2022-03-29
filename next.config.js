@@ -2,6 +2,7 @@
 
 const { i18n } = require("./next-i18next.config");
 const { withSentryConfig } = require("@sentry/nextjs");
+const { redirect } = require("next/dist/server/api-utils");
 
 /**
  * @type {import("@sentry/nextjs/esm/config/types").ExportedNextConfig}
@@ -10,6 +11,12 @@ const nextConfig = {
   i18n,
   async redirects() {
     return [
+      {
+        source: "/dresden-informationen",
+        destination:
+          "/?valfilter.region_country_city=Dresden&valfilter.intents_level_one=Informationen",
+        permanent: false,
+      },
       {
         source: "/dresden",
         destination: "/?valfilter.region_country_city=Dresden",

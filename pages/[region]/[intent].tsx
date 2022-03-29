@@ -14,12 +14,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   console.log("context", context);
   return {
-    redirect: {
-      destination: `/?valfilter.region_country_city=${
-        context.params!.region
-      }&valfilter.intents_level_one=${context.params!.intent}`,
-      statusCode: 301,
-    },
+    // redirect: {
+    //   destination: `/?valfilter.region_country_city=${
+    //     context.params!.region
+    //   }&valfilter.intents_level_one=${context.params!.intent}`,
+    //   statusCode: 301,
+    // },
     props: {},
   };
 };
