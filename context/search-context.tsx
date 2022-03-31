@@ -9,6 +9,7 @@ import {
   keysIn,
   map,
   mergeAll,
+  path,
   pathOr,
   pick,
   propOr,
@@ -22,14 +23,10 @@ export const getClient = () =>
     searchKey: "search-ycf9f6qz3944w8wbdq122b3v",
     endpointBase:
       "https://my-deployment-68ff1c.ent.europe-west3.gcp.cloud.es.io",
-    engineName: "ukraine-help",
+    engineName: "ukr-crawl-v2",
   });
 
 export const filters = [
-  {
-    id: "intents_level_two",
-    name: "intents_level_two",
-  },
   {
     id: "page_languages",
     name: "Seitensprache",
@@ -87,7 +84,7 @@ export const getResultFieldsByLocale = (locale: string) => ({
   region_country_city: {
     raw: {},
   },
-  intents_level_one: {
+  what: {
     raw: {},
   },
   [resultFieldLocalMapping[locale]?.title || "title_de"]: {
@@ -117,6 +114,7 @@ const defaultState = {
   onReset: () => {},
   searchResults: [] as SearchResult[],
   totalHits: 0,
+  currentRegion: undefined as string | undefined,
 };
 
 const SearchContext = createContext(defaultState);
@@ -138,15 +136,11 @@ export const performSearch = (
   });
   const searchPromise = client.search(query, {
     facets: {
-      intents_who: {
+      who: {
         type: "value",
         size: 10,
       },
-      intents_level_one: {
-        type: "value",
-        size: 20,
-      },
-      intents_level_two: {
+      what: {
         type: "value",
         size: 20,
       },
@@ -218,14 +212,14 @@ export const parseActiveValFiltersFromQuery: (
   query: UrlParsedValues
 ) => ActiveValFilters = (query) => {
   const relevantKeys: string[] = filter(
-    (x: string) => x.startsWith("valfilter.") && query[x] !== "",
+    (x: string) => x.startsWith("f.") && query[x] !== "",
     keysIn(query)
   );
   const facets: ActiveValFilters = map((v: string | string[] | undefined) => {
     return v ? (Array.isArray(v) ? v : v.split(",")) : [];
   }, pick(relevantKeys, query));
   const renamedFacets: ActiveValFilters = {
-    ...renameKeysWith((k: string) => k.replace("valfilter.", ""), facets),
+    ...renameKeysWith((k: string) => k.replace("f.", ""), facets),
   };
   return renamedFacets;
 };
@@ -239,7 +233,7 @@ export const facetsToQuery: (facets: ActiveValFilters) => {
   );
   const query: { [key: string]: string } = mergeAll(
     map((k: string) => {
-      return { [`valfilter.${k}`]: facets[k].join(",") };
+      return { [`f.${k}`]: facets[k].join(",") };
     }, relevantKeys)
   );
   return query;
@@ -297,6 +291,9 @@ export const SearchContextProvider: React.FC<{
   const [query, setQuery] = useState(defaultQuery);
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     defaultActiveValFilters
+  );
+  const [currentRegion, setCurrentRegion] = useState<string | undefined>(
+    path(["region_country_city", 0], activeValFilters)
   );
   const [isSearching, setIsSearching] = useState(true);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(
@@ -427,6 +424,7 @@ export const SearchContextProvider: React.FC<{
         onReset,
         searchResults,
         totalHits,
+        currentRegion,
       }}
     >
       {children}

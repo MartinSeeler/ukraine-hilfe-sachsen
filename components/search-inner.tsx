@@ -115,7 +115,7 @@ const SearchInner: FC = () => {
           <SearchInput />
           <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
             <QuickFacetButton
-              facetKey={"intents_who"}
+              facetKey={"who"}
               facetName={"Ich bin..."}
               bgColor="bg-blue-600"
               icon={UserIcon}
@@ -127,7 +127,7 @@ const SearchInner: FC = () => {
               icon={LocationMarkerIcon}
             />
             <QuickFacetButton
-              facetKey={"intents_level_one"}
+              facetKey={"what"}
               facetName={"Ich möchte..."}
               bgColor="bg-green-600"
               icon={TagIcon}
