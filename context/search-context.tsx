@@ -293,7 +293,7 @@ export const SearchContextProvider: React.FC<{
     defaultActiveValFilters
   );
   const [currentRegion, setCurrentRegion] = useState<string | undefined>(
-    path(["region_country_city", 0], activeValFilters)
+    path(["region_country_city", 0], defaultActiveValFilters)
   );
   const [isSearching, setIsSearching] = useState(true);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(

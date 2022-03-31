@@ -8,18 +8,19 @@ const { redirect } = require("next/dist/server/api-utils");
  * @type {import("@sentry/nextjs/esm/config/types").ExportedNextConfig}
  */
 const nextConfig = {
+  basePath: "https://www.ukraine-hilfe-sachsen.info",
   i18n,
   async redirects() {
     return [
       {
         source: "/dresden-informationen",
         destination:
-          "/?valfilter.region_country_city=Dresden&valfilter.intents_level_one=Informationen",
+          "/?f.region_country_city=Dresden&f.intents_level_one=Informationen",
         permanent: false,
       },
       {
         source: "/dresden",
-        destination: "/?valfilter.region_country_city=Dresden",
+        destination: "/?f.region_country_city=Dresden",
         permanent: false,
       },
     ];

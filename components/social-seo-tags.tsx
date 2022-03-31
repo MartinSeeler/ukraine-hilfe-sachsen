@@ -1,20 +1,73 @@
 import { useTranslation } from "next-i18next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { pathOr } from "ramda";
+import { isEmptyString } from "ramda-adjunct";
 import React, { FC, useContext, useEffect, useState } from "react";
 import SearchContext from "../context/search-context";
 
+type SeoTextOption = {
+  key: string;
+  text: string;
+};
+
+const seoDescOptions = [
+  {
+    key: "seo_desc_empty",
+    text: "{{total_hits}} Ergebnisse gefunden",
+  },
+  {
+    key: "seo_desc_query",
+    text: "{{total_hits}} Ergebnisse für die Suche nach '{{query}}'",
+  },
+  {
+    key: "seo_desc_region",
+    text: "{{total_hits}} Ergebnisse in {{region}}",
+  },
+  {
+    key: "seo_desc_query_region",
+    text: "{{total_hits}} Ergebnisse für die Suche nach '{{query}}' in {{region}}",
+  },
+];
+
+const getSeoTextOption: (
+  query: string,
+  currentRegion: string | undefined
+) => SeoTextOption = (query, currentRegion) => {
+  if (isEmptyString(query)) {
+    if (currentRegion) {
+      return seoDescOptions[2];
+    }
+    return seoDescOptions[0];
+  } else {
+    if (currentRegion) {
+      return seoDescOptions[3];
+    }
+    return seoDescOptions[1];
+  }
+};
+
 const SocialSeoTags: FC = () => {
-  const { query, response } = useContext(SearchContext);
+  const router = useRouter();
+  const { query, currentRegion, response } = useContext(SearchContext);
   const [totalHits, setTotalHits] = useState(
     pathOr(0, ["info", "meta", "page", "total_results"], response)
   );
+
+  const { t } = useTranslation();
+
+  const [description, setDescription] = useState(
+    getSeoTextOption(query, currentRegion)
+  );
+
   useEffect(() => {
     setTotalHits(
       pathOr(0, ["info", "meta", "page", "total_results"], response)
     );
-  }, [response]);
-  const { t } = useTranslation();
+    setDescription(getSeoTextOption(query, currentRegion));
+    console.log("current_region", currentRegion);
+  }, [response, currentRegion]);
+
   return (
     <Head>
       <meta charSet="utf-8" />
@@ -59,50 +112,36 @@ const SocialSeoTags: FC = () => {
       />
       <meta
         name="description"
-        content={
-          query !== ""
-            ? t(
-                "search_description",
-                "Wir haben {{hits_count}} hilfreiche Links für die Suche nach {{query}} in unserer Datenbank gefunden.",
-                {
-                  hits_count: totalHits,
-                  query,
-                }
-              )
-            : t("homepage_subtitle", "Lorem ipsum ich bin ein Sub Title")
-        }
+        content={t(description.key, description.text, {
+          total_hits: totalHits,
+          query,
+          region: currentRegion,
+        })}
       />
       <meta
         name="twitter:description"
-        content={
-          query !== ""
-            ? t(
-                "search_description",
-                "Wir haben {{hits_count}} hilfreiche Links für die Suche nach {{query}} in unserer Datenbank gefunden.",
-                {
-                  hits_count: totalHits,
-                  query,
-                }
-              )
-            : t("homepage_subtitle", "Lorem ipsum ich bin ein Sub Title")
-        }
+        content={t(description.key, description.text, {
+          total_hits: totalHits,
+          query,
+          region: currentRegion,
+        })}
       />
       <meta
         name="og:description"
-        content={
-          query !== ""
-            ? t(
-                "search_description",
-                "Wir haben {{hits_count}} hilfreiche Links für die Suche nach {{query}} in unserer Datenbank gefunden.",
-                {
-                  hits_count: totalHits,
-                  query,
-                }
-              )
-            : t("homepage_subtitle", "Lorem ipsum ich bin ein Sub Title")
+        content={t(description.key, description.text, {
+          total_hits: totalHits,
+          query,
+          region: currentRegion,
+        })}
+      />
+      <link
+        rel="canonical"
+        href={
+          "https://www.ukraine-hilfe-sachsen.info" +
+          (router.locale ? "/" + router.locale : "/") +
+          router.asPath.replace("/", "")
         }
       />
-      <link rel="canonical" href="https://ukraine-hilfe-sachsen.info/" />
       <meta name="twitter:url" content="https://ukraine-hilfe-sachsen.info/" />
     </Head>
   );
