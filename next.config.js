@@ -8,7 +8,6 @@ const { redirect } = require("next/dist/server/api-utils");
  * @type {import("@sentry/nextjs/esm/config/types").ExportedNextConfig}
  */
 const nextConfig = {
-  basePath: "https://www.ukraine-hilfe-sachsen.info",
   i18n,
   async redirects() {
     return [
