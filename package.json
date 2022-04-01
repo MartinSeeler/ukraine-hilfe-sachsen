@@ -14,6 +14,7 @@
     "@heroicons/react": "1.0.6",
     "@sentry/nextjs": "^6.19.2",
     "i18next-locize-backend": "5.0.1",
+    "locize-lastused": "^3.0.13",
     "next": "12.1.0",
     "next-i18next": "10.5.0",
     "ramda": "^0.28.0",

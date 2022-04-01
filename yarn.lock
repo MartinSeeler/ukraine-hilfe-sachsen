@@ -949,6 +949,13 @@ localforage@^1.8.1:
   dependencies:
     lie "3.1.1"
 
+locize-lastused@^3.0.13:
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/locize-lastused/-/locize-lastused-3.0.13.tgz#3d87840abc406bcbc433a39653c80891cd5cbc28"
+  integrity sha512-379gfVJ16b3/Jmo/64AzKlHl0xC88/CT91/0qrKbZpKzBDjaC2FKP7ukEr0FFig7I+NTynEDpffDR5zz5dZXdA==
+  dependencies:
+    cross-fetch "3.1.5"
+
 loose-envify@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
