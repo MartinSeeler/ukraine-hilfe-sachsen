@@ -15,7 +15,9 @@ const ListEntrySerpHit: FC<{
   const { i18n } = useTranslation();
   const [targetUrl] = useState(() =>
     i18n.language !== "de" && !entry.document
-      ? `http://translate.google.com/translate?js=n&sl=de&tl=${i18n.language}&u=${entry.url}`
+      ? `http://translate.google.com/translate?js=n&sl=de&tl=${
+          i18n.language
+        }&u=${encodeURIComponent(entry.url)}`
       : entry.url
   );
 
