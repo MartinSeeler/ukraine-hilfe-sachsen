@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
-import React, { FC, useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, { FC } from "react";
 
 const languageOptions = [
   { name: "Deutsch", flag: "de", code: "de" },

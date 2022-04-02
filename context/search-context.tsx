@@ -39,6 +39,7 @@ export type SearchResult = {
   description: string;
   url: string;
   page_languages: string[];
+  document: boolean;
   region: string[];
   tags: string[];
   official: boolean;
@@ -79,6 +80,9 @@ export const getResultFieldsByLocale = (locale: string) => ({
     raw: {},
   },
   region: {
+    raw: {},
+  },
+  document: {
     raw: {},
   },
   region_country_city: {
@@ -240,6 +244,7 @@ export const facetsToQuery: (facets: ActiveValFilters) => {
 };
 
 const parseSearchResults = (response: any, locale: string) => {
+  console.log("parseSearchResults", response.results[0].data);
   return map<object, SearchResult>(
     (hit: object) => ({
       id: pathOr("", ["data", "id", "raw"], hit),
@@ -275,6 +280,8 @@ const parseSearchResults = (response: any, locale: string) => {
       page_languages: pathOr([], ["data", "page_languages", "raw"], hit),
       official:
         pathOr<string>("false", ["data", "official", "raw"], hit) === "true",
+      document:
+        pathOr<string>("false", ["data", "document", "raw"], hit) === "true",
     }),
     propOr<object[], string, any>([], "results", response)
   );

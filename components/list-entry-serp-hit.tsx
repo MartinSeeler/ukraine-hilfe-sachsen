@@ -3,17 +3,27 @@ import {
   ChevronRightIcon,
   TranslateIcon,
 } from "@heroicons/react/solid";
-import React, { FC, useContext } from "react";
+import { useTranslation } from "next-i18next";
+import React, { FC, useContext, useState } from "react";
 import SearchContext, { SearchResult } from "../context/search-context";
 
 const ListEntrySerpHit: FC<{
   entry: SearchResult;
 }> = ({ entry }) => {
   const { onSerpClick } = useContext(SearchContext);
+
+  const { i18n } = useTranslation();
+  const [targetUrl] = useState(() =>
+    i18n.language !== "de" && !entry.document
+      ? `http://translate.google.com/translate?js=n&sl=de&tl=${i18n.language}&u=${entry.url}`
+      : entry.url
+  );
+
   return (
     <li>
+      {entry.document}
       <a
-        href={entry.url}
+        href={targetUrl}
         target="_blank"
         onClick={() => onSerpClick(entry.id)}
         rel="noopener noreferrer nofollow"
