@@ -1,7 +1,7 @@
 import { useTranslation } from "next-i18next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { pathOr } from "ramda";
+import { filter, join, pathOr } from "ramda";
 import { isEmptyString } from "ramda-adjunct";
 import React, { FC, useContext, useEffect, useState } from "react";
 import SearchContext from "../context/search-context";
@@ -72,6 +72,31 @@ const getSeoTextOption: (
   return seoDescOptions[0];
 };
 
+const buildCanonicalUrlPostfix = (
+  selectedRegion: string | undefined,
+  selectedWhat: string | undefined,
+  selectedWho: string | undefined,
+  query: string
+) => {
+  return (
+    "?" +
+    join(
+      "&",
+      filter(
+        (x: string) => !isEmptyString(x),
+        [
+          isEmptyString(query) ? "" : `q=${encodeURIComponent(query)}`,
+          selectedWho ? `f.who=${encodeURIComponent(selectedWho)}` : "",
+          selectedRegion
+            ? `f.region_country_city=${encodeURIComponent(selectedRegion)}`
+            : "",
+          selectedWhat ? `f.what=${encodeURIComponent(selectedWhat)}` : "",
+        ]
+      )
+    )
+  );
+};
+
 const SocialSeoTags: FC = () => {
   const router = useRouter();
   const { query, selectedWhat, selectedWho, selectedRegion, response } =
@@ -81,6 +106,13 @@ const SocialSeoTags: FC = () => {
   );
 
   const { t } = useTranslation();
+
+  const [url, setUrl] = useState(
+    () =>
+      "https://ukraine-hilfe-sachsen.info" +
+      (router.locale ? "/" + router.locale : "") +
+      buildCanonicalUrlPostfix(selectedRegion, selectedWhat, selectedWho, query)
+  );
 
   const [description, setDescription] = useState(
     getSeoTextOption(selectedRegion, selectedWhat, selectedWho)
@@ -92,7 +124,24 @@ const SocialSeoTags: FC = () => {
     );
     setDescription(getSeoTextOption(selectedRegion, selectedWhat, selectedWho));
     console.log("current_region", selectedRegion);
-  }, [response, selectedRegion, selectedWhat, selectedWho]);
+    setUrl(
+      "https://ukraine-hilfe-sachsen.info" +
+        (router.locale ? "/" + router.locale : "") +
+        buildCanonicalUrlPostfix(
+          selectedRegion,
+          selectedWhat,
+          selectedWho,
+          query
+        )
+    );
+  }, [
+    query,
+    response,
+    selectedRegion,
+    selectedWhat,
+    selectedWho,
+    router.locale,
+  ]);
 
   return (
     <Head>
@@ -116,7 +165,6 @@ const SocialSeoTags: FC = () => {
             : ""
         }${t("homepage_title", "Ukraine Hilfe Sachsen")}`}
       </title>
-      <meta name="og:url" content="https://ukraine-hilfe-sachsen.info/" />
       <meta
         property="og:site_name"
         content={t("homepage_title", "Ukraine Hilfe Sachsen")}
@@ -202,15 +250,9 @@ const SocialSeoTags: FC = () => {
           who: selectedWho,
         })}
       />
-      <link
-        rel="canonical"
-        href={
-          "https://www.ukraine-hilfe-sachsen.info" +
-          (router.locale ? "/" + router.locale : "/") +
-          router.asPath.replace("/", "")
-        }
-      />
-      <meta name="twitter:url" content="https://ukraine-hilfe-sachsen.info/" />
+      <link rel="canonical" href={url} />
+      <meta name="twitter:url" content={url} />
+      <meta name="og:url" content={url} />
     </Head>
   );
 };
