@@ -10,17 +10,15 @@ module.exports = {
         locale: "de",
         hreflang: "de",
         changefreq: "daily",
-        priority: "0.5",
-      },
-      "/dresden-informationen"
-    ),
-    await config.transform(
-      {
-        locale: "en",
-        hreflang: "en",
-        alternateRefs: config.alternateRefs,
-        changefreq: "daily",
-        priority: "0.5",
+        alternateRefs: [
+          {
+            locale: "en",
+            hreflang: "en",
+            changefreq: "daily",
+            href: "/dresden-informations",
+            hrefIsAbsolute: true,
+          },
+        ],
       },
       "/dresden-informationen"
     ),

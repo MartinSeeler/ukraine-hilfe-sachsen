@@ -12,13 +12,12 @@ const nextConfig = {
     return [
       {
         source: "/dresden-informationen",
-        destination:
-          "/?f.region_country_city=Dresden&f.intents_level_one=Informationen",
+        destination: "/?f.region_country_city=Dresden&f.what=Informationen",
         permanent: false,
       },
       {
-        source: "/dresden",
-        destination: "/?f.region_country_city=Dresden",
+        source: "/dresden-informations",
+        destination: "/en?f.region_country_city=Dresden",
         permanent: false,
       },
     ];

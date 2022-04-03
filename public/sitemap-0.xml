@@ -9,7 +9,7 @@
 >
 <url><loc>https://www.ukraine-hilfe-sachsen.info</loc><changefreq
     >daily</changefreq><priority>0.7</priority><lastmod
-    >2022-03-31T19:14:15.860Z</lastmod><xhtml:link
+    >2022-04-03T08:53:00.087Z</lastmod><xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://www.ukraine-hilfe-sachsen.info/en"
@@ -24,7 +24,7 @@
     /></url>
 <url><loc>https://www.ukraine-hilfe-sachsen.info/impressum</loc><changefreq
     >daily</changefreq><priority>0.7</priority><lastmod
-    >2022-03-31T19:14:15.860Z</lastmod><xhtml:link
+    >2022-04-03T08:53:00.087Z</lastmod><xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://www.ukraine-hilfe-sachsen.info/en/impressum"
@@ -39,20 +39,9 @@
     /></url>
 <url><loc
     >https://www.ukraine-hilfe-sachsen.info/dresden-informationen</loc><changefreq
-    >daily</changefreq><priority>0.5</priority></url>
-<url><loc
-    >https://www.ukraine-hilfe-sachsen.info/dresden-informationen</loc><changefreq
-    >daily</changefreq><priority>0.5</priority><xhtml:link
+    >daily</changefreq><xhtml:link
       rel="alternate"
       hreflang="en"
-      href="https://www.ukraine-hilfe-sachsen.info/en/dresden-informationen"
-    /><xhtml:link
-      rel="alternate"
-      hreflang="uk"
-      href="https://www.ukraine-hilfe-sachsen.info/uk/dresden-informationen"
-    /><xhtml:link
-      rel="alternate"
-      hreflang="ru"
-      href="https://www.ukraine-hilfe-sachsen.info/ru/dresden-informationen"
+      href="/dresden-informations"
     /></url>
 </urlset>
