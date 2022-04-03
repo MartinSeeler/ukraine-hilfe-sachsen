@@ -118,7 +118,9 @@ const defaultState = {
   onReset: () => {},
   searchResults: [] as SearchResult[],
   totalHits: 0,
-  currentRegion: undefined as string | undefined,
+  selectedRegion: undefined as string | undefined,
+  selectedWhat: undefined as string | undefined,
+  selectedWho: undefined as string | undefined,
 };
 
 const SearchContext = createContext(defaultState);
@@ -244,7 +246,6 @@ export const facetsToQuery: (facets: ActiveValFilters) => {
 };
 
 const parseSearchResults = (response: any, locale: string) => {
-  console.log("parseSearchResults", response.results[0].data);
   return map<object, SearchResult>(
     (hit: object) => ({
       id: pathOr("", ["data", "id", "raw"], hit),
@@ -299,8 +300,14 @@ export const SearchContextProvider: React.FC<{
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     defaultActiveValFilters
   );
-  const [currentRegion, setCurrentRegion] = useState<string | undefined>(
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>(
     path(["region_country_city", 0], defaultActiveValFilters)
+  );
+  const [selectedWho, setSelectedWho] = useState<string | undefined>(
+    path(["who", 0], defaultActiveValFilters)
+  );
+  const [selectedWhat, setSelectedWhat] = useState<string | undefined>(
+    path(["what", 0], defaultActiveValFilters)
   );
   const [isSearching, setIsSearching] = useState(true);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(
@@ -331,6 +338,11 @@ export const SearchContextProvider: React.FC<{
     setSearchResults(parseSearchResults(defaultResponse, locale || "de"));
     setTotalHits(
       pathOr(0, ["info", "meta", "page", "total_results"], defaultResponse)
+    );
+    setSelectedWho(path(["who", 0], defaultActiveValFilters));
+    setSelectedWhat(path(["what", 0], defaultActiveValFilters));
+    setSelectedRegion(
+      path(["region_country_city", 0], defaultActiveValFilters)
     );
     setIsSearching(false);
   }, [defaultQuery, defaultResponse, defaultActiveValFilters]);
@@ -431,7 +443,9 @@ export const SearchContextProvider: React.FC<{
         onReset,
         searchResults,
         totalHits,
-        currentRegion,
+        selectedRegion,
+        selectedWho,
+        selectedWhat,
       }}
     >
       {children}

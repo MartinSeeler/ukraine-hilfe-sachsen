@@ -2,7 +2,6 @@
 
 const { i18n } = require("./next-i18next.config");
 const { withSentryConfig } = require("@sentry/nextjs");
-const { redirect } = require("next/dist/server/api-utils");
 
 /**
  * @type {import("@sentry/nextjs/esm/config/types").ExportedNextConfig}

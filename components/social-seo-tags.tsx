@@ -14,42 +14,68 @@ type SeoTextOption = {
 const seoDescOptions = [
   {
     key: "seo_desc_empty",
-    text: "{{total_hits}} Ergebnisse gefunden",
+    text: "Ukraine Hilfe Sachsen - Hilfe für die Ukraine",
   },
   {
-    key: "seo_desc_query",
-    text: "{{total_hits}} Ergebnisse für die Suche nach '{{query}}'",
+    key: "seo_desc_who",
+    text: "Hilfreiche Links für $t(facet_who_value_{{who}})",
   },
   {
     key: "seo_desc_region",
-    text: "{{total_hits}} Ergebnisse in {{region}}",
+    text: "Hilfreiche Links für die Region $t(facet_region_country_city_value_{{region}})",
   },
   {
-    key: "seo_desc_query_region",
-    text: "{{total_hits}} Ergebnisse für die Suche nach '{{query}}' in {{region}}",
+    key: "seo_desc_what",
+    text: "Hilfreiche Links zum Thema $t(facet_what_value_{{what}})",
+  },
+  {
+    key: "seo_desc_region_who",
+    text: "Hilfreiche Links für $t(facet_who_value_{{who}}) in der Region $t(facet_region_country_city_value_{{region}})",
+  },
+  {
+    key: "seo_desc_region_what",
+    text: "Hilfreiche Links zum Thema $t(facet_what_value_{{what}}) in der Region $t(facet_region_country_city_value_{{region}})",
+  },
+  {
+    key: "seo_desc_region_who_what",
+    text: "Hilfreiche Links zum Thema $t(facet_what_value_{{what}}) für $t(facet_who_value_{{who}}) in der Region $t(facet_region_country_city_value_{{region}})",
+  },
+  {
+    key: "seo_desc_who_what",
+    text: "Hilfreiche Links zum Thema $t(facet_what_value_{{what}}) für $t(facet_who_value_{{who}})",
   },
 ];
 
 const getSeoTextOption: (
-  query: string,
-  currentRegion: string | undefined
-) => SeoTextOption = (query, currentRegion) => {
-  if (isEmptyString(query)) {
-    if (currentRegion) {
-      return seoDescOptions[2];
+  selectedRegion: string | undefined,
+  selectedWhat: string | undefined,
+  selectedWho: string | undefined
+) => SeoTextOption = (selectedRegion, selectedWhat, selectedWho) => {
+  if (selectedRegion && selectedWhat && selectedWho) {
+    return seoDescOptions[6];
+  }
+  if (selectedRegion) {
+    if (selectedWho) {
+      return seoDescOptions[4];
+    } else if (selectedWhat) {
+      return seoDescOptions[5];
     }
-    return seoDescOptions[0];
-  } else {
-    if (currentRegion) {
-      return seoDescOptions[3];
+    return seoDescOptions[2];
+  } else if (selectedWhat) {
+    if (selectedWho) {
+      return seoDescOptions[7];
     }
+    return seoDescOptions[3];
+  } else if (selectedWho) {
     return seoDescOptions[1];
   }
+  return seoDescOptions[0];
 };
 
 const SocialSeoTags: FC = () => {
   const router = useRouter();
-  const { query, currentRegion, response } = useContext(SearchContext);
+  const { query, selectedWhat, selectedWho, selectedRegion, response } =
+    useContext(SearchContext);
   const [totalHits, setTotalHits] = useState(
     pathOr(0, ["info", "meta", "page", "total_results"], response)
   );
@@ -57,16 +83,16 @@ const SocialSeoTags: FC = () => {
   const { t } = useTranslation();
 
   const [description, setDescription] = useState(
-    getSeoTextOption(query, currentRegion)
+    getSeoTextOption(selectedRegion, selectedWhat, selectedWho)
   );
 
   useEffect(() => {
     setTotalHits(
       pathOr(0, ["info", "meta", "page", "total_results"], response)
     );
-    setDescription(getSeoTextOption(query, currentRegion));
-    console.log("current_region", currentRegion);
-  }, [response, currentRegion]);
+    setDescription(getSeoTextOption(selectedRegion, selectedWhat, selectedWho));
+    console.log("current_region", selectedRegion);
+  }, [response, selectedRegion, selectedWhat, selectedWho]);
 
   return (
     <Head>
@@ -114,24 +140,27 @@ const SocialSeoTags: FC = () => {
         name="description"
         content={t(description.key, description.text, {
           total_hits: totalHits,
-          query,
-          region: currentRegion,
+          region: selectedRegion,
+          what: selectedWhat,
+          who: selectedWho,
         })}
       />
       <meta
         name="twitter:description"
         content={t(description.key, description.text, {
           total_hits: totalHits,
-          query,
-          region: currentRegion,
+          region: selectedRegion,
+          what: selectedWhat,
+          who: selectedWho,
         })}
       />
       <meta
         name="og:description"
         content={t(description.key, description.text, {
           total_hits: totalHits,
-          query,
-          region: currentRegion,
+          region: selectedRegion,
+          what: selectedWhat,
+          who: selectedWho,
         })}
       />
       <link
