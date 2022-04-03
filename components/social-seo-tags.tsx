@@ -99,14 +99,46 @@ const SocialSeoTags: FC = () => {
       <meta charSet="utf-8" />
       <meta httpEquiv="content-type" content="text/html; charset=utf-8" />
       <title>
-        {query !== ""
-          ? `${query} - ${t("homepage_title", "Ukraine Hilfe Sachsen")}`
-          : t("homepage_title", "Ukraine Hilfe Sachsen")}
+        {`${isEmptyString(query) ? "" : query + " - "}${
+          selectedWho
+            ? t("facet_who_value_" + selectedWho, selectedWho) + " - "
+            : ""
+        }${
+          selectedRegion
+            ? t(
+                "facet_region_country_city_value_" + selectedRegion,
+                selectedRegion
+              ) + " - "
+            : ""
+        }${
+          selectedWhat
+            ? t("facet_what_value_" + selectedWhat, selectedWhat) + " - "
+            : ""
+        }${t("homepage_title", "Ukraine Hilfe Sachsen")}`}
       </title>
       <meta name="og:url" content="https://ukraine-hilfe-sachsen.info/" />
       <meta
-        name="og:title"
+        property="og:site_name"
         content={t("homepage_title", "Ukraine Hilfe Sachsen")}
+      />
+      <meta
+        name="og:title"
+        content={`${isEmptyString(query) ? "" : query + " - "}${
+          selectedWho
+            ? t("facet_who_value_" + selectedWho, selectedWho) + " - "
+            : ""
+        }${
+          selectedRegion
+            ? t(
+                "facet_region_country_city_value_" + selectedRegion,
+                selectedRegion
+              ) + " - "
+            : ""
+        }${
+          selectedWhat
+            ? t("facet_what_value_" + selectedWhat, selectedWhat) + " - "
+            : ""
+        }${t("homepage_title", "Ukraine Hilfe Sachsen")}`}
       />
       <meta
         name="og:image"
@@ -121,21 +153,28 @@ const SocialSeoTags: FC = () => {
       <meta name="twitter:domain" content="ukraine-hilfe-sachsen.info" />
       <meta
         name="twitter:title"
-        content={t("homepage_title", "Ukraine Hilfe Sachsen")}
+        content={`${isEmptyString(query) ? "" : query + " - "}${
+          selectedWho
+            ? t("facet_who_value_" + selectedWho, selectedWho) + " - "
+            : ""
+        }${
+          selectedRegion
+            ? t(
+                "facet_region_country_city_value_" + selectedRegion,
+                selectedRegion
+              ) + " - "
+            : ""
+        }${
+          selectedWhat
+            ? t("facet_what_value_" + selectedWhat, selectedWhat) + " - "
+            : ""
+        }${t("homepage_title", "Ukraine Hilfe Sachsen")}`}
       />
       <meta
         name="twitter:label1"
         content={t("search_hits", "Anzahl an Links")}
       />
       <meta name="twitter:data1" content={totalHits.toString()} />
-      <meta
-        property="og:site_name"
-        content={
-          query !== ""
-            ? `${query} - ${t("homepage_title", "Ukraine Hilfe Sachsen")}`
-            : t("homepage_title", "Ukraine Hilfe Sachsen")
-        }
-      />
       <meta
         name="description"
         content={t(description.key, description.text, {
