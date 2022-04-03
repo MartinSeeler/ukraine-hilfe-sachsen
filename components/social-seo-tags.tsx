@@ -123,7 +123,6 @@ const SocialSeoTags: FC = () => {
       pathOr(0, ["info", "meta", "page", "total_results"], response)
     );
     setDescription(getSeoTextOption(selectedRegion, selectedWhat, selectedWho));
-    console.log("current_region", selectedRegion);
     setUrl(
       "https://ukraine-hilfe-sachsen.info" +
         (router.locale ? "/" + router.locale : "") +

@@ -18,10 +18,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   query,
   res,
 }) => {
-  // res.setHeader(
-  //   "Cache-Control",
-  //   "public, s-maxage=3600, stale-while-revalidate=7200"
-  // );
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=7200"
+  );
   const i18next = await serverSideTranslations(locale || "de", ["translation"]);
   const client = getClient();
   const activeValFilters = parseActiveValFiltersFromQuery(query);
@@ -31,7 +31,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     activeValFilters,
     locale || "de"
   );
-  // console.log(response.results[0]);
   return {
     props: {
       ...i18next,
