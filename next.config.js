@@ -17,7 +17,7 @@ const nextConfig = {
       },
       {
         source: "/dresden-informations",
-        destination: "/en?f.region_country_city=Dresden",
+        destination: "/en?f.region_country_city=Dresden&f.what=Informationen",
         permanent: false,
       },
     ];
