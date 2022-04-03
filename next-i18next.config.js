@@ -7,9 +7,7 @@ module.exports = {
     projectId: process.env.LOCIZE_PID || "",
     apiKey: process.env.LOCIZE_API_KEY,
     referenceLng: "de",
-    allowedAddOrUpdateHosts: [
-      "ukraine-hilfe-sachsen-git-develop-martinseeler.vercel.app",
-    ],
+    allowedAddOrUpdateHosts: ["localhost"],
   },
   locizeLastUsed: {
     // locize project id
@@ -17,13 +15,14 @@ module.exports = {
     apiKey: process.env.LOCIZE_API_KEY,
     referenceLng: "de",
     debounceSubmit: 90000,
-    allowedHosts: ["ukraine-hilfe-sachsen-git-develop-martinseeler.vercel.app"],
+    allowedHosts: ["localhost"],
   },
+  projectId: process.env.LOCIZE_PID || "",
   use: [require("i18next-locize-backend/cjs"), require("locize-lastused/cjs")],
   serializeConfig: false, // because of the custom use i18next plugin
-  debug: false, //process.env.NODE_ENV === "development",
+  debug: false, // process.env.NODE_ENV === "development",
   fallbackLng: "de",
-  saveMissing: false, // process.env.NODE_ENV === "development",
+  saveMissing: process.env.NODE_ENV === "development",
   keySeparator: undefined,
   defaultNS: "translation",
   supportedLngs: ["de", "en", "uk", "ru"],
