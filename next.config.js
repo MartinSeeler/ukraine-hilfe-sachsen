@@ -3,6 +3,8 @@
 const { i18n } = require("./next-i18next.config");
 const { withSentryConfig } = require("@sentry/nextjs");
 
+const redirects = require("./test.json");
+
 /**
  * @type {import("@sentry/nextjs/esm/config/types").ExportedNextConfig}
  */
@@ -10,13 +12,33 @@ const nextConfig = {
   i18n,
   async redirects() {
     return [
+      ...redirects.map((red) => ({
+        source: red.source_de,
+        destination: red.destination_de,
+        permanent: false,
+      })),
+      ...redirects.map((red) => ({
+        source: red.source_en,
+        destination: red.destination_en,
+        permanent: false,
+      })),
+      ...redirects.map((red) => ({
+        source: red.source_uk,
+        destination: red.destination_uk,
+        permanent: false,
+      })),
+      ...redirects.map((red) => ({
+        source: red.source_ru,
+        destination: red.destination_ru,
+        permanent: false,
+      })),
       {
         source: "/dresden-informationen",
         destination: "/?f.region_country_city=Dresden&f.what=Informationen",
         permanent: false,
       },
       {
-        source: "/dresden-informations",
+        source: "/en/dresden-informationen",
         destination: "/en?f.region_country_city=Dresden&f.what=Informationen",
         permanent: false,
       },
