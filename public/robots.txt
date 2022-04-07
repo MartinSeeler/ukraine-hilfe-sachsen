@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.ukraine-hilfe-sachsen.info
+
+# Sitemaps
+Sitemap: https://www.ukraine-hilfe-sachsen.info/sitemap.xml

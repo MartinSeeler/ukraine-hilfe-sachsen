@@ -5,14 +5,24 @@ module.exports = {
   },
   backend: {
     projectId: process.env.LOCIZE_PID || "",
-    // apiKey: 'myApiKey', // to not add the api-key in production, used for saveMissing feature
+    apiKey: process.env.LOCIZE_API_KEY,
     referenceLng: "de",
+    allowedAddOrUpdateHosts: ["localhost"],
   },
-  use: [require("i18next-locize-backend/cjs")],
+  locizeLastUsed: {
+    // locize project id
+    projectId: process.env.LOCIZE_PID || "",
+    apiKey: process.env.LOCIZE_API_KEY,
+    referenceLng: "de",
+    debounceSubmit: 90000,
+    allowedHosts: ["localhost"],
+  },
+  projectId: process.env.LOCIZE_PID || "",
+  use: [require("i18next-locize-backend/cjs"), require("locize-lastused/cjs")],
   serializeConfig: false, // because of the custom use i18next plugin
-  debug: false, //process.env.NODE_ENV === "development",
+  debug: false, // process.env.NODE_ENV === "development",
   fallbackLng: "de",
-  saveMissing: false, // process.env.NODE_ENV === "development",
+  saveMissing: process.env.NODE_ENV === "development",
   keySeparator: undefined,
   defaultNS: "translation",
   supportedLngs: ["de", "en", "uk", "ru"],

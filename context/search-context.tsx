@@ -9,6 +9,7 @@ import {
   keysIn,
   map,
   mergeAll,
+  path,
   pathOr,
   pick,
   propOr,
@@ -22,14 +23,10 @@ export const getClient = () =>
     searchKey: "search-ycf9f6qz3944w8wbdq122b3v",
     endpointBase:
       "https://my-deployment-68ff1c.ent.europe-west3.gcp.cloud.es.io",
-    engineName: "ukraine-help",
+    engineName: "ukr-crawl-v2",
   });
 
 export const filters = [
-  {
-    id: "intents_level_two",
-    name: "intents_level_two",
-  },
   {
     id: "page_languages",
     name: "Seitensprache",
@@ -42,6 +39,7 @@ export type SearchResult = {
   description: string;
   url: string;
   page_languages: string[];
+  document: boolean;
   region: string[];
   tags: string[];
   official: boolean;
@@ -84,10 +82,13 @@ export const getResultFieldsByLocale = (locale: string) => ({
   region: {
     raw: {},
   },
+  document: {
+    raw: {},
+  },
   region_country_city: {
     raw: {},
   },
-  intents_level_one: {
+  what: {
     raw: {},
   },
   [resultFieldLocalMapping[locale]?.title || "title_de"]: {
@@ -117,6 +118,9 @@ const defaultState = {
   onReset: () => {},
   searchResults: [] as SearchResult[],
   totalHits: 0,
+  selectedRegion: undefined as string | undefined,
+  selectedWhat: undefined as string | undefined,
+  selectedWho: undefined as string | undefined,
 };
 
 const SearchContext = createContext(defaultState);
@@ -138,15 +142,11 @@ export const performSearch = (
   });
   const searchPromise = client.search(query, {
     facets: {
-      intents_who: {
+      who: {
         type: "value",
         size: 10,
       },
-      intents_level_one: {
-        type: "value",
-        size: 20,
-      },
-      intents_level_two: {
+      what: {
         type: "value",
         size: 20,
       },
@@ -218,14 +218,14 @@ export const parseActiveValFiltersFromQuery: (
   query: UrlParsedValues
 ) => ActiveValFilters = (query) => {
   const relevantKeys: string[] = filter(
-    (x: string) => x.startsWith("valfilter.") && query[x] !== "",
+    (x: string) => x.startsWith("f.") && query[x] !== "",
     keysIn(query)
   );
   const facets: ActiveValFilters = map((v: string | string[] | undefined) => {
     return v ? (Array.isArray(v) ? v : v.split(",")) : [];
   }, pick(relevantKeys, query));
   const renamedFacets: ActiveValFilters = {
-    ...renameKeysWith((k: string) => k.replace("valfilter.", ""), facets),
+    ...renameKeysWith((k: string) => k.replace("f.", ""), facets),
   };
   return renamedFacets;
 };
@@ -239,7 +239,7 @@ export const facetsToQuery: (facets: ActiveValFilters) => {
   );
   const query: { [key: string]: string } = mergeAll(
     map((k: string) => {
-      return { [`valfilter.${k}`]: facets[k].join(",") };
+      return { [`f.${k}`]: facets[k].join(",") };
     }, relevantKeys)
   );
   return query;
@@ -281,6 +281,8 @@ const parseSearchResults = (response: any, locale: string) => {
       page_languages: pathOr([], ["data", "page_languages", "raw"], hit),
       official:
         pathOr<string>("false", ["data", "official", "raw"], hit) === "true",
+      document:
+        pathOr<string>("false", ["data", "document", "raw"], hit) === "true",
     }),
     propOr<object[], string, any>([], "results", response)
   );
@@ -297,6 +299,15 @@ export const SearchContextProvider: React.FC<{
   const [query, setQuery] = useState(defaultQuery);
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     defaultActiveValFilters
+  );
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>(
+    path(["region_country_city", 0], defaultActiveValFilters)
+  );
+  const [selectedWho, setSelectedWho] = useState<string | undefined>(
+    path(["who", 0], defaultActiveValFilters)
+  );
+  const [selectedWhat, setSelectedWhat] = useState<string | undefined>(
+    path(["what", 0], defaultActiveValFilters)
   );
   const [isSearching, setIsSearching] = useState(true);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(
@@ -327,6 +338,11 @@ export const SearchContextProvider: React.FC<{
     setSearchResults(parseSearchResults(defaultResponse, locale || "de"));
     setTotalHits(
       pathOr(0, ["info", "meta", "page", "total_results"], defaultResponse)
+    );
+    setSelectedWho(path(["who", 0], defaultActiveValFilters));
+    setSelectedWhat(path(["what", 0], defaultActiveValFilters));
+    setSelectedRegion(
+      path(["region_country_city", 0], defaultActiveValFilters)
     );
     setIsSearching(false);
   }, [defaultQuery, defaultResponse, defaultActiveValFilters]);
@@ -427,6 +443,9 @@ export const SearchContextProvider: React.FC<{
         onReset,
         searchResults,
         totalHits,
+        selectedRegion,
+        selectedWho,
+        selectedWhat,
       }}
     >
       {children}
