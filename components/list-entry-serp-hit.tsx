@@ -6,6 +6,7 @@ import {
 import { useTranslation } from "next-i18next";
 import React, { FC, useContext, useState } from "react";
 import SearchContext, { SearchResult } from "../context/search-context";
+import { GeoSerpBadge, IntentSerpBadge } from "./serp-badge";
 
 const ListEntrySerpHit: FC<{
   entry: SearchResult;
@@ -23,7 +24,6 @@ const ListEntrySerpHit: FC<{
 
   return (
     <li>
-      {entry.document}
       <a
         href={targetUrl}
         target="_blank"
@@ -63,7 +63,7 @@ const ListEntrySerpHit: FC<{
             <div className="mt-2 text-xs text-gray-400 flex">
               <p className="truncate">{entry.url}</p>
             </div>
-            {/* <div className="mt-3 flex flex-wrap gap-3">
+            <div className="mt-3 flex flex-wrap gap-3">
               {entry.region.map((region) => (
                 <GeoSerpBadge
                   key={`${entry.id}-region-${region}`}
@@ -76,8 +76,8 @@ const ListEntrySerpHit: FC<{
                   value={tag}
                 />
               ))}
-            </div> */}
-            <div className="mt-3 flex items-center text-sm text-gray-500">
+            </div>
+            {/* <div className="mt-3 flex items-center text-sm text-gray-500">
               <TranslateIcon
                 className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                 aria-hidden="true"
@@ -96,7 +96,7 @@ const ListEntrySerpHit: FC<{
                   <span className="fi fi-ua" />
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="flex">
             <ChevronRightIcon

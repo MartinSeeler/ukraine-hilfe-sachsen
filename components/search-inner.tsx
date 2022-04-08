@@ -1,33 +1,23 @@
-import { Dialog, Transition } from "@headlessui/react";
 import {
   LocationMarkerIcon,
-  MapIcon,
   TagIcon,
   UserIcon,
 } from "@heroicons/react/outline";
-import {
-  PlusIcon,
-  SupportIcon,
-  TrashIcon,
-  XIcon,
-} from "@heroicons/react/solid";
+import { SupportIcon, TrashIcon } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import Link from "next/link";
 import { isEmpty } from "ramda";
 import { isEmptyString } from "ramda-adjunct";
-import { FC, Fragment, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 import SearchContext from "../context/search-context";
-import DesktopFacetBlock from "./desktop-facet-block";
 import Footer from "./footer";
 import LanguageTabs from "./language-tabs";
-import MobileFacetsBlock from "./mobile-facets-block";
 import QuickFacetButton from "./quick-facet-button";
 import SearchInput from "./search-input";
 import SerpHits from "./serp-hits";
 import SocialSeoTags from "./social-seo-tags";
 
 const SearchInner: FC = () => {
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const { t } = useTranslation();
   const { onReset, activeValFilters, query, searchResults } =
     useContext(SearchContext);
@@ -35,59 +25,10 @@ const SearchInner: FC = () => {
     <div className="">
       <SocialSeoTags />
       <div>
-        {/* Mobile filter dialog */}
-        <Transition.Root show={mobileFiltersOpen} as={Fragment}>
-          <Dialog
-            as="div"
-            className="fixed inset-0 flex z-40 lg:hidden"
-            onClose={setMobileFiltersOpen}
-          >
-            <Transition.Child
-              as={Fragment}
-              enter="transition-opacity ease-linear duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="transition-opacity ease-linear duration-300"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
-            </Transition.Child>
-
-            <Transition.Child
-              as={Fragment}
-              enter="transition ease-in-out duration-300 transform"
-              enterFrom="translate-x-full"
-              enterTo="translate-x-0"
-              leave="transition ease-in-out duration-300 transform"
-              leaveFrom="translate-x-0"
-              leaveTo="translate-x-full"
-            >
-              <div className="ml-auto relative max-w-xs w-full h-full bg-white shadow-xl py-4 pb-6 flex flex-col overflow-y-auto">
-                <div className="px-4 flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-gray-900">
-                    {t("filters_more", "Mehr Filter")}
-                  </h2>
-                  <button
-                    type="button"
-                    className="-mr-2 w-10 h-10 p-2 flex items-center justify-center text-gray-400 hover:text-gray-500"
-                    onClick={() => setMobileFiltersOpen(false)}
-                  >
-                    <span className="sr-only">Close menu</span>
-                    <XIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
-
-                <MobileFacetsBlock />
-              </div>
-            </Transition.Child>
-          </Dialog>
-        </Transition.Root>
-
-        <div className="max-w-2xl mx-auto px-4 py-4 sm:px-6 lg:max-w-7xl lg:px-8">
+        <div className="mx-auto px-4 py-4 sm:px-6 lg:px-8 max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
           <LanguageTabs />
         </div>
-        <main className="max-w-2xl mx-auto px-4 py-5 sm:py-12 sm:px-6 lg:max-w-7xl lg:px-8">
+        <main className="mx-auto px-4 py-5 sm:py-12 sm:px-6 lg:px-8 max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
           <div className="pb-10 sm:flex sm:items-center sm:justify-between">
             <div className="">
               <Link href="/">
@@ -136,21 +77,6 @@ const SearchInner: FC = () => {
           <span className="pt-5 flex gap-x-3 lg:hidden">
             <button
               type="button"
-              onClick={() => setMobileFiltersOpen(true)}
-              className="flex flex-1 items-center px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none"
-            >
-              <span className="flex flex-grow">
-                {t("filters_more", "Mehr Filter")}
-              </span>
-              <span className="flex-shrink-0 h-6 w-6 inline-flex items-center justify-end">
-                <PlusIcon
-                  className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                  aria-hidden="true"
-                />
-              </span>
-            </button>
-            <button
-              type="button"
               onClick={onReset}
               disabled={isEmptyString(query) && isEmpty(activeValFilters)}
               className="disabled:cursor-not-allowed disabled:opacity-50 flex flex-1 items-center px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none"
@@ -166,8 +92,7 @@ const SearchInner: FC = () => {
               </span>
             </button>
           </span>
-          <div className="pt-6 lg:pt-12 lg:grid lg:grid-cols-4 lg:gap-x-8">
-            <DesktopFacetBlock />
+          <div className="pt-6 lg:pt-12">
             <SerpHits />
           </div>
         </main>
