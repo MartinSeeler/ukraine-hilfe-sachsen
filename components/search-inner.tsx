@@ -8,7 +8,7 @@ import { useTranslation } from "next-i18next";
 import Link from "next/link";
 import { isEmpty } from "ramda";
 import { isEmptyString } from "ramda-adjunct";
-import { FC, useContext, useState } from "react";
+import { FC, useContext } from "react";
 import SearchContext from "../context/search-context";
 import Footer from "./footer";
 import LanguageTabs from "./language-tabs";
@@ -19,8 +19,7 @@ import SocialSeoTags from "./social-seo-tags";
 
 const SearchInner: FC = () => {
   const { t } = useTranslation();
-  const { onReset, activeValFilters, query, searchResults } =
-    useContext(SearchContext);
+  const { onReset, activeValFilters, query } = useContext(SearchContext);
   return (
     <div className="">
       <SocialSeoTags />
@@ -74,7 +73,7 @@ const SearchInner: FC = () => {
               icon={TagIcon}
             />
           </div>
-          <span className="pt-5 flex gap-x-3 lg:hidden">
+          <span className="pt-5 flex gap-x-3 md:hidden">
             <button
               type="button"
               onClick={onReset}

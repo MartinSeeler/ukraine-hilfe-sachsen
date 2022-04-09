@@ -23,6 +23,30 @@ const QuickFacetButton: FC<{
   );
   const [open, setOpen] = useState(false);
 
+  const [facetValues, setFacetValues] = useState(
+    sortBy(
+      prop("value"),
+      pathOr<{ value: string; count: number }[]>(
+        [],
+        ["info", "facets", props.facetKey, 0, "data"],
+        response
+      )
+    )
+  );
+
+  useEffect(() => {
+    setFacetValues(
+      sortBy(
+        prop("value"),
+        pathOr<{ value: string; count: number }[]>(
+          [],
+          ["info", "facets", props.facetKey, 0, "data"],
+          response
+        )
+      )
+    );
+  }, [response]);
+
   useEffect(() => {
     setCurrentValues(activeValFilters[props.facetKey] || []);
     setOpen(false);
@@ -31,8 +55,9 @@ const QuickFacetButton: FC<{
   return (
     <button
       type="button"
+      disabled={currentValues.length === 0 && facetValues.length === 0}
       className={
-        "group p-2 w-full flex items-center justify-between rounded-full border border-gray-300 shadow-sm space-x-3 text-left focus:outline-none " +
+        "disabled:cursor-not-allowed disabled:opacity-50 group p-2 w-full flex items-center justify-between rounded-full border border-gray-300 shadow-sm space-x-3 text-left focus:outline-none " +
         (currentValues.length > 0 ? props.bgColor : "bg-white hover:bg-gray-50")
       }
       onClick={() => {
@@ -148,29 +173,24 @@ const QuickFacetButton: FC<{
                   </div>
                 </div>
                 <ul className="pt-4 w-full">
-                  {sortBy(
-                    prop("value"),
-                    pathOr<{ value: string; count: number }[]>(
-                      [],
-                      ["info", "facets", props.facetKey, 0, "data"],
-                      response
+                  {facetValues.map(
+                    (option: { value: string; count: number }) => (
+                      <ValueFacetEntry
+                        key={
+                          props.facetKey +
+                          "-" +
+                          option.value +
+                          "-" +
+                          option.count +
+                          "-"
+                        }
+                        facetKey={props.facetKey}
+                        facetValue={option.value}
+                        count={option.count}
+                        selected={false}
+                      />
                     )
-                  ).map((option: { value: string; count: number }) => (
-                    <ValueFacetEntry
-                      key={
-                        props.facetKey +
-                        "-" +
-                        option.value +
-                        "-" +
-                        option.count +
-                        "-"
-                      }
-                      facetKey={props.facetKey}
-                      facetValue={option.value}
-                      count={option.count}
-                      selected={false}
-                    />
-                  ))}
+                  )}
                 </ul>
               </div>
             </Transition.Child>
