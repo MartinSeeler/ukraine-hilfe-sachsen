@@ -2,7 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import { XIcon } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
-import { pathOr } from "ramda";
+import { pathOr, prop, sortBy } from "ramda";
 import React, { FC, Fragment, useContext, useEffect, useState } from "react";
 import SearchContext from "../context/search-context";
 import { ValueFacetEntry } from "./value-facet";
@@ -148,10 +148,13 @@ const QuickFacetButton: FC<{
                   </div>
                 </div>
                 <ul className="pt-4 w-full">
-                  {pathOr<{ value: string; count: number }[]>(
-                    [],
-                    ["info", "facets", props.facetKey, 0, "data"],
-                    response
+                  {sortBy(
+                    prop("value"),
+                    pathOr<{ value: string; count: number }[]>(
+                      [],
+                      ["info", "facets", props.facetKey, 0, "data"],
+                      response
+                    )
                   ).map((option: { value: string; count: number }) => (
                     <ValueFacetEntry
                       key={
