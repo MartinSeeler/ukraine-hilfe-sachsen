@@ -318,11 +318,14 @@ export const SearchContextProvider: React.FC<{
   );
 
   const updateQuery = (newQuery: string) => {
-    const newQueryObj = { q: newQuery };
+    const newQueryObj = isEmptyString(newQuery) ? {} : { q: newQuery };
     setQuery(newQuery);
     setIsSearching(true);
     push(
-      { pathname, query: isEmptyString(newQuery) ? {} : newQueryObj },
+      {
+        pathname,
+        query: { ...newQueryObj, ...facetsToQuery(activeValFilters) },
+      },
       undefined,
       {
         locale,
