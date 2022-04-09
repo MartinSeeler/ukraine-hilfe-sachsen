@@ -267,7 +267,7 @@ const parseSearchResults = (response: any, locale: string) => {
         ],
         hit
       ),
-      tags: pathOr([], ["data", "intents_level_one", "raw"], hit),
+      tags: pathOr([], ["data", "what", "raw"], hit),
       region: uniq(
         filter(
           (x) => x !== "Sachsen" && x !== "Deutschland",

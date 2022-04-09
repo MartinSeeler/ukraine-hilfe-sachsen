@@ -6,6 +6,7 @@ import {
 import { useTranslation } from "next-i18next";
 import React, { FC, useContext, useState } from "react";
 import SearchContext, { SearchResult } from "../context/search-context";
+import { GeoSerpBadge, IntentSerpBadge } from "./serp-badge";
 
 const ListEntrySerpHit: FC<{
   entry: SearchResult;
@@ -23,7 +24,6 @@ const ListEntrySerpHit: FC<{
 
   return (
     <li>
-      {entry.document}
       <a
         href={targetUrl}
         target="_blank"
