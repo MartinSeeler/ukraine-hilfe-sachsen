@@ -152,7 +152,7 @@ export const performSearch = (
       },
       region_country_city: {
         type: "value",
-        size: 20,
+        size: 100,
       },
       page_languages: {
         type: "value",
