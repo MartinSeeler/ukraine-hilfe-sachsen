@@ -1,19 +1,22 @@
-import { TranslateIcon } from "@heroicons/react/solid";
+import { TranslateIcon, TrashIcon } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import React, { useContext } from "react";
 import SearchContext, { SearchResult } from "../context/search-context";
 import ListEntrySerpHit from "./list-entry-serp-hit";
 
 const SerpHits = () => {
-  const { totalHits, isSearching, searchResults } = useContext(SearchContext);
+  const { totalHits, isSearching, searchResults, onReset } =
+    useContext(SearchContext);
   const { t } = useTranslation();
 
   return (
     <div className="mt-6 lg:mt-0 lg:col-span-3">
       <span className="flex text-sm font-medium text-gray-700 mb-2">
-        {t("search_description_short", "{{hits_count}} Links gefunden", {
-          hits_count: totalHits,
-        })}
+        {isSearching
+          ? "..."
+          : t("search_description_short", "{{hits_count}} Links gefunden", {
+              hits_count: totalHits,
+            })}
       </span>
       <div className="bg-white shadow ring-1 ring-black ring-opacity-5 overflow-hidden sm:rounded-md">
         <ul role="list" className={"divide-y divide-gray-200"}>
@@ -45,10 +48,25 @@ const SerpHits = () => {
         </ul>
       </div>
       {totalHits === 0 && (
-        <div className="p-4 text-center">
+        <div className="p-4 text-center items-center flex flex-col">
           <p className="text-gray-500">
             {t("no_results", "Keine Ergebnisse gefunden")}
           </p>
+          <button
+            type="button"
+            onClick={onReset}
+            className="mt-5 flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none"
+          >
+            <span className="flex">
+              {t("filters_reset", "Filter zurücksetzen")}
+            </span>
+            <span className="flex-shrink-0 h-6 w-6 inline-flex items-center justify-end">
+              <TrashIcon
+                className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                aria-hidden="true"
+              />
+            </span>
+          </button>
         </div>
       )}
     </div>
