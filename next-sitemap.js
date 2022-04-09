@@ -11,10 +11,10 @@ module.exports = {
   autoLastmod: false,
   additionalPaths: async (config) =>
     redirects.map((red) => ({
-      loc: red.source_de,
+      loc: siteUrl + red.source_de,
       // locale: "de",
-      hreflang: "de",
-      hrefIsAbsolute: true,
+      // hreflang: "de",
+      // hrefIsAbsolute: true,
       changefreq: "daily",
       priority: 0.5,
       // lastmod: new Date().toISOString(),
