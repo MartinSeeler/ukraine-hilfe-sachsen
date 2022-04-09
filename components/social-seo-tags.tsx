@@ -109,7 +109,7 @@ const SocialSeoTags: FC = () => {
 
   const [url, setUrl] = useState(
     () =>
-      "https://ukraine-hilfe-sachsen.info" +
+      "https://www.ukraine-hilfe-sachsen.info" +
       (router.locale ? "/" + router.locale : "") +
       buildCanonicalUrlPostfix(selectedRegion, selectedWhat, selectedWho, query)
   );
@@ -124,7 +124,7 @@ const SocialSeoTags: FC = () => {
     );
     setDescription(getSeoTextOption(selectedRegion, selectedWhat, selectedWho));
     setUrl(
-      "https://ukraine-hilfe-sachsen.info" +
+      "https://www.ukraine-hilfe-sachsen.info" +
         (router.locale ? "/" + router.locale : "") +
         buildCanonicalUrlPostfix(
           selectedRegion,

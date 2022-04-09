@@ -2,8 +2,10 @@
 
 const redirects = require("./test.json");
 
+const siteUrl = "https://www.ukraine-hilfe-sachsen.info";
+
 module.exports = {
-  siteUrl: "https://www.ukraine-hilfe-sachsen.info",
+  siteUrl,
   generateRobotsTxt: true, // (optional)
   hrefIsAbsolute: false,
   additionalPaths: async (config) =>
@@ -19,36 +21,36 @@ module.exports = {
         {
           locale: "en",
           hreflang: "en",
-          href: red.source_en,
+          href: siteUrl + red.source_en,
           hrefIsAbsolute: true,
         },
         {
           locale: "uk",
           hreflang: "uk",
 
-          href: red.source_uk,
+          href: siteUrl + red.source_uk,
           hrefIsAbsolute: true,
         },
         {
           locale: "ru",
           hreflang: "ru",
 
-          href: red.source_ru,
+          href: siteUrl + red.source_ru,
           hrefIsAbsolute: true,
         },
       ],
     })),
   alternateRefs: [
     {
-      href: "https://www.ukraine-hilfe-sachsen.info/en",
+      href: siteUrl + "/en",
       hreflang: "en",
     },
     {
-      href: "https://www.ukraine-hilfe-sachsen.info/uk",
+      href: siteUrl + "/uk",
       hreflang: "uk",
     },
     {
-      href: "https://www.ukraine-hilfe-sachsen.info/ru",
+      href: siteUrl + "/ru",
       hreflang: "ru",
     },
   ],
