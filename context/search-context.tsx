@@ -148,7 +148,7 @@ export const performSearch = (
       },
       what: {
         type: "value",
-        size: 20,
+        size: 40,
       },
       region_country_city: {
         type: "value",
@@ -160,7 +160,7 @@ export const performSearch = (
       },
     },
     page: {
-      size: 25,
+      size: 100,
     },
     filters: {
       all: chain(
