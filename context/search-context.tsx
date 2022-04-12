@@ -162,6 +162,14 @@ export const performSearch = (
     page: {
       size: 100,
     },
+    sort: [
+      {
+        _score: "desc",
+      },
+      {
+        [resultFieldLocalMapping[locale]?.title || "title_de"]: "asc",
+      },
+    ],
     filters: {
       all: chain(
         (k) => map((v) => ({ [k]: v }), activeValFilters[k]),
