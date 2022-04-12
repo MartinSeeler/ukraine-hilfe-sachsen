@@ -12,9 +12,15 @@ const Impressum: FC = () => {
             <p className="mt-1 text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
               Impressum
             </p>
-            {/* <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500">
-              foo
-            </p> */}
+            <h3 className="pt-12 text-base font-semibold text-gray-600 tracking-wide uppercase mt-6">
+              Haftungsauschluss
+            </h3>
+            <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500">
+              Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine
+              Haftung für die Inhalte externer Links. Für den Inhalt der
+              verlinkten Seiten sind ausschließlich deren Betreiber
+              verantwortlich.
+            </p>
           </div>
           <div className="mt-24 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
