@@ -32,11 +32,14 @@ const SerpHits = () => {
                       <div className="h-6 mb-2 w-7/12 rounded-md bg-blue-600"></div>
                       <div className="h-5 w-9/12 rounded-md bg-gray-300"></div>
                       <div className="h-4 w-6/12 rounded-md bg-gray-200 "></div>
-                      <div className="mt-3 flex items-center text-sm text-gray-500">
-                        <TranslateIcon
+                      <div className="mt-3 flex items-center text-sm text-gray-500 gap-3">
+                        {/* <TranslateIcon
                           className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                           aria-hidden="true"
-                        />
+                        /> */}
+                        <div className="h-4 w-1/12 rounded-md bg-amber-600 "></div>
+                        <div className="h-4 w-1/12 rounded-md bg-green-600 "></div>
+                        <div className="h-4 w-1/12 rounded-md bg-green-600 "></div>
                       </div>
                     </div>
                   </div>
