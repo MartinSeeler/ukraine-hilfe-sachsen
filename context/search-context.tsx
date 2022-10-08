@@ -43,7 +43,9 @@ const searchParamsToQueryString = (
   return `?q=${query}&${new URLSearchParams(facets).toString()}&l=${locale}`;
 };
 
-export const SearchContextProvider: React.FC = ({ children }) => {
+export const SearchContextProvider: React.FC<{
+  initialResponse?: SearchResponse;
+}> = ({ initialResponse, children }) => {
   const { locale, query, pathname, push } = useRouter();
   const [userquery, setQuery] = useState(parseQueryStringFromQuery(query));
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
@@ -85,8 +87,12 @@ export const SearchContextProvider: React.FC = ({ children }) => {
       setTotalHits(data.meta.page.total_results);
     }
   }, [data]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [totalHits, setTotalHits] = useState(0);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>(
+    initialResponse ? parseSearchResults(initialResponse, locale || "de") : []
+  );
+  const [totalHits, setTotalHits] = useState(
+    initialResponse?.meta.page.total_results || 0
+  );
 
   const updateQuery = (newQuery: string) => {
     const newQueryObj = isEmptyString(newQuery) ? {} : { q: newQuery };

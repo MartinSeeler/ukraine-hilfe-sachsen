@@ -1,4 +1,4 @@
-import { TranslateIcon, TrashIcon } from "@heroicons/react/solid";
+import { TrashIcon } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import React, { useContext } from "react";
 import SearchContext from "../context/search-context";
