@@ -5,13 +5,14 @@ import {
 } from "@heroicons/react/solid";
 import { useTranslation } from "next-i18next";
 import React, { FC, useContext, useState } from "react";
-import SearchContext, { SearchResult } from "../context/search-context";
+import SearchContext from "../context/search-context";
+import { SearchResult } from "../lib/types";
 import { GeoSerpBadge, IntentSerpBadge } from "./serp-badge";
 
 const ListEntrySerpHit: FC<{
   entry: SearchResult;
 }> = ({ entry }) => {
-  const { onSerpClick } = useContext(SearchContext);
+  // const { onSerpClick } = useContext(SearchContext);
 
   const { i18n } = useTranslation();
   const [targetUrl] = useState(() =>
@@ -27,15 +28,15 @@ const ListEntrySerpHit: FC<{
       <a
         href={targetUrl}
         target="_blank"
-        onClick={() => onSerpClick(entry.id)}
+        // onClick={() => onSerpClick(entry.id)}
         rel="noopener noreferrer nofollow"
         className=""
       >
-        <div className="px-4 py-4 flex items-center sm:px-6 space-x-3 hover:bg-gray-50">
+        <div className="flex items-center px-4 py-4 space-x-3 sm:px-6 hover:bg-gray-50">
           <div className="flex flex-col flex-grow overflow-hidden">
-            <div className="flex text-sm truncate items-center space-x-2">
+            <div className="flex items-center space-x-2 text-sm truncate">
               <p
-                className="font-medium text-blue-600 max-w-100 truncate lg:text-lg"
+                className="font-medium text-blue-600 truncate max-w-100 lg:text-lg"
                 dangerouslySetInnerHTML={{
                   __html: entry.title,
                 }}
@@ -48,11 +49,11 @@ const ListEntrySerpHit: FC<{
                   />
                 </div>
               )}
-              {/* <p className="ml-1 flex-shrink-0 font-normal text-gray-500">
+              {/* <p className="flex-shrink-0 ml-1 font-normal text-gray-500">
                           in foo
                         </p> */}
             </div>
-            <div className="mt-2 flex">
+            <div className="flex mt-2">
               <div
                 className="text-sm text-gray-500"
                 dangerouslySetInnerHTML={{
@@ -60,10 +61,10 @@ const ListEntrySerpHit: FC<{
                 }}
               />
             </div>
-            <div className="mt-2 text-xs text-gray-400 flex">
+            <div className="flex mt-2 text-xs text-gray-400">
               <p className="truncate">{entry.url}</p>
             </div>
-            <div className="mt-3 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 mt-3">
               {entry.region.map((region) => (
                 <GeoSerpBadge
                   key={`${entry.id}-region-${region}`}
@@ -77,7 +78,7 @@ const ListEntrySerpHit: FC<{
                 />
               ))}
             </div>
-            {/* <div className="mt-3 flex items-center text-sm text-gray-500">
+            {/* <div className="flex items-center mt-3 text-sm text-gray-500">
               <TranslateIcon
                 className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                 aria-hidden="true"
@@ -100,7 +101,7 @@ const ListEntrySerpHit: FC<{
           </div>
           <div className="flex">
             <ChevronRightIcon
-              className="h-5 w-5 text-gray-400"
+              className="w-5 h-5 text-gray-400"
               aria-hidden="true"
             />
           </div>
