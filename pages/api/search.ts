@@ -1,23 +1,23 @@
-import Client from "@elastic/enterprise-search/lib";
+import { parseLocaleFromQuery } from "./../../lib/url";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { performSearch } from "../../lib/appsearch";
+import {
+  parseActiveValFiltersFromQuery,
+  parseQueryStringFromQuery,
+} from "../../lib/url";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  const client = new Client({
-    url: "https://my-deployment-68ff1c.ent.europe-west3.gcp.cloud.es.io",
-    auth: {
-      token: "search-ycf9f6qz3944w8wbdq122b3v",
-    },
-  });
-  const response = await client.app.search({
-    engine_name: "ukr-crawl-v2",
-    body: {
-      query: "Betten",
-    },
-  });
+  const query = parseQueryStringFromQuery(req.query);
+  const activeValFilters = parseActiveValFiltersFromQuery(req.query);
+  const locale = parseLocaleFromQuery(req.query);
+  const response = await performSearch(query, activeValFilters, locale);
   console.log(response);
-  client.close();
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=7200"
+  );
   res.status(200).json(response);
 }
