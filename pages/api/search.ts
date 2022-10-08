@@ -1,10 +1,10 @@
-import { parseLocaleFromQuery } from "./../../lib/url";
+import { parseLocaleFromQuery } from "../../lib/search";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { performSearch } from "../../lib/appsearch";
 import {
   parseActiveValFiltersFromQuery,
   parseQueryStringFromQuery,
-} from "../../lib/url";
+} from "../../lib/search";
 
 export default async function handler(
   req: NextApiRequest,

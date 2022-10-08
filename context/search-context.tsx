@@ -11,11 +11,14 @@ import {
   parseActiveValFiltersFromQuery,
   facetsToQuery,
   parseQueryStringFromQuery,
-} from "../lib/url";
+  parseSearchResults,
+} from "../lib/search";
+import { SearchResponse } from "@elastic/enterprise-search/lib/api/app/types";
 
 const defaultState = {
   query: "",
-  activeValFilters: {},
+  response: undefined as SearchResponse | undefined,
+  activeValFilters: {} as ActiveValFilters,
   updateQuery: (newQuery: string) => {},
   onResetFacetByKey: (facetKey: string) => {},
   locale: "de",
@@ -66,7 +69,7 @@ export const SearchContextProvider: React.FC = ({ children }) => {
     setSelectedRegion(path(["region_country_city", 0], newActiveValFilters));
   }, [query]);
 
-  const { data, isValidating } = useSWR<SearchResult[]>(
+  const { data, isValidating } = useSWR<SearchResponse>(
     `/api/search${searchParamsToQueryString(
       userquery,
       activeValFilters,
@@ -77,7 +80,10 @@ export const SearchContextProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     console.log("Response", data);
-    setSearchResults(data || []);
+    if (data) {
+      setSearchResults(parseSearchResults(data, locale || "de"));
+      setTotalHits(data.meta.page.total_results);
+    }
   }, [data]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [totalHits, setTotalHits] = useState(0);
@@ -167,6 +173,7 @@ export const SearchContextProvider: React.FC = ({ children }) => {
   return (
     <SearchContext.Provider
       value={{
+        response: data,
         query: userquery,
         updateQuery,
         locale: locale || "de",

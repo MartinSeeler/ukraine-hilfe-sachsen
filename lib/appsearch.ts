@@ -1,8 +1,8 @@
 import { Client } from "@elastic/enterprise-search";
-import { filter, keysIn, map, chain, pathOr, uniq } from "ramda";
-import { ActiveValFilters, SearchResult } from "./types";
+import { keysIn, map, chain } from "ramda";
+import { ActiveValFilters } from "./types";
 import * as Sentry from "@sentry/react";
-import { SearchResponse } from "@elastic/enterprise-search/lib/api/app/types";
+import { getResultFieldsByLocale, resultFieldLocalMapping } from "./search";
 
 export const client: Client = new Client({
   url: "https://my-deployment-68ff1c.ent.europe-west3.gcp.cloud.es.io",
@@ -104,43 +104,7 @@ export const performSearch = (
     .finally(() => {
       transaction.finish();
     });
-  return searchPromise.then((resp) => parseSearchResults(resp, locale));
-};
-
-const parseSearchResults = (response: SearchResponse, locale: string) => {
-  return map<object, SearchResult>(
-    (hit: object) => ({
-      id: pathOr("", ["id", "raw"], hit),
-      title: pathOr(
-        "",
-        [resultFieldLocalMapping[locale]?.title || "title_de", "snippet"],
-        hit
-      ),
-      description: pathOr(
-        "",
-        [
-          resultFieldLocalMapping[locale]?.description || "description_de",
-          "snippet",
-        ],
-        hit
-      ),
-      tags: pathOr([], ["what", "raw"], hit),
-      region: uniq(
-        filter(
-          (x) => x !== "Sachsen" && x !== "Deutschland",
-          [
-            ...pathOr([], ["region", "raw"], hit),
-            ...pathOr([], ["region_country_city", "raw"], hit),
-          ]
-        )
-      ),
-      url: pathOr("", ["url", "raw"], hit),
-      page_languages: pathOr([], ["page_languages", "raw"], hit),
-      official: pathOr<string>("false", ["official", "raw"], hit) === "true",
-      document: pathOr<string>("false", ["document", "raw"], hit) === "true",
-    }),
-    response.results
-  );
+  return searchPromise;
 };
 
 /**
@@ -168,63 +132,3 @@ const generateAnalyticsTags: (
         "uhs-lang-" + lang,
       ]
     : ["uhs-dev"];
-
-const resultFieldLocalMapping: {
-  [locale: string]: { title: string; description: string };
-} = {
-  de: {
-    title: "title_de",
-    description: "description_de",
-  },
-  en: {
-    title: "title_en",
-    description: "description_en",
-  },
-  ru: {
-    title: "title_ru",
-    description: "description_ru",
-  },
-  uk: {
-    title: "title_uk",
-    description: "description_ua",
-  },
-};
-
-export const getResultFieldsByLocale = (locale: string) => ({
-  id: {
-    raw: {},
-  },
-  page_languages: {
-    raw: {},
-  },
-  url: {
-    raw: {},
-  },
-  official: {
-    raw: {},
-  },
-  region: {
-    raw: {},
-  },
-  document: {
-    raw: {},
-  },
-  region_country_city: {
-    raw: {},
-  },
-  what: {
-    raw: {},
-  },
-  [resultFieldLocalMapping[locale]?.title || "title_de"]: {
-    snippet: {
-      size: 256,
-      fallback: true,
-    },
-  },
-  [resultFieldLocalMapping[locale]?.description || "description_de"]: {
-    snippet: {
-      size: 256,
-      fallback: true,
-    },
-  },
-});
