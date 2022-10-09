@@ -12,7 +12,7 @@ import { GeoSerpBadge, IntentSerpBadge } from "./serp-badge";
 const ListEntrySerpHit: FC<{
   entry: SearchResult;
 }> = ({ entry }) => {
-  // const { onSerpClick } = useContext(SearchContext);
+  const { onSerpClick } = useContext(SearchContext);
 
   const { i18n } = useTranslation();
   const [targetUrl] = useState(() =>
@@ -28,7 +28,7 @@ const ListEntrySerpHit: FC<{
       <a
         href={targetUrl}
         target="_blank"
-        // onClick={() => onSerpClick(entry.id)}
+        onClick={() => onSerpClick(entry.id)}
         rel="noopener noreferrer nofollow"
         className=""
       >
@@ -65,39 +65,23 @@ const ListEntrySerpHit: FC<{
               <p className="truncate">{entry.url}</p>
             </div>
             <div className="flex flex-wrap gap-3 mt-3">
-              {entry.region.map((region) => (
-                <GeoSerpBadge
-                  key={`${entry.id}-region-${region}`}
-                  value={region}
-                />
-              ))}
-              {entry.tags.map((tag) => (
-                <IntentSerpBadge
-                  key={`${entry.id}-region-${tag}`}
-                  value={tag}
-                />
-              ))}
+              {entry.region
+                .filter((region) => region.length > 0)
+                .map((region) => (
+                  <GeoSerpBadge
+                    key={`${entry.id}-region-${region}`}
+                    value={region}
+                  />
+                ))}
+              {entry.tags
+                .filter((tag) => tag.length > 0)
+                .map((tag) => (
+                  <IntentSerpBadge
+                    key={`${entry.id}-region-${tag}`}
+                    value={tag}
+                  />
+                ))}
             </div>
-            {/* <div className="flex items-center mt-3 text-sm text-gray-500">
-              <TranslateIcon
-                className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-              <div className="flex space-x-3">
-                {entry.page_languages.includes("de") && (
-                  <span className="fi fi-de" />
-                )}
-                {entry.page_languages.includes("en") && (
-                  <span className="fi fi-us" />
-                )}
-                {entry.page_languages.includes("ru") && (
-                  <span className="fi fi-ru" />
-                )}
-                {entry.page_languages.includes("uk") && (
-                  <span className="fi fi-ua" />
-                )}
-              </div>
-            </div> */}
           </div>
           <div className="flex">
             <ChevronRightIcon

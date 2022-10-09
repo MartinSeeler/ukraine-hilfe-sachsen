@@ -29,7 +29,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     activeValFilters,
     locale || "de"
   );
-  console.log(response);
   res.setHeader(
     "Cache-Control",
     "public, s-maxage=3600, stale-while-revalidate=7200"

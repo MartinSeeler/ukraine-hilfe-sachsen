@@ -11,18 +11,18 @@ export const client: Client = new Client({
   },
 });
 
-export const onSerpClick = (
+export const logClickthrough = async (
   query: string,
   activeValFilters: ActiveValFilters,
   locale: string,
   docId: string,
   reqId: string
 ) => {
-  client.app
+  return client.app
     .logClickthrough({
       engine_name: "ukr-crawl-v2",
       body: {
-        query: "",
+        query,
         document_id: docId,
         request_id: reqId,
         tags: generateAnalyticsTags(activeValFilters, locale),

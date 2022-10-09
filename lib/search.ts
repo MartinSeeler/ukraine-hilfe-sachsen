@@ -145,3 +145,23 @@ export const parseLocaleFromQuery: (query: ParsedUrlQuery) => string = (
 ) => {
   return query.l ? (Array.isArray(query.l) ? query.l[0] : query.l) : "de";
 };
+
+export const parseDocIdFromQuery: (query: ParsedUrlQuery) => string = (
+  query
+) => {
+  return query.did
+    ? Array.isArray(query.did)
+      ? query.did[0]
+      : query.did
+    : "unknown";
+};
+
+export const parseReqIdFromQuery: (query: ParsedUrlQuery) => string = (
+  query
+) => {
+  return query.rid
+    ? Array.isArray(query.rid)
+      ? query.rid[0]
+      : query.rid
+    : "unknown";
+};

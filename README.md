@@ -2,7 +2,7 @@
 
 - **Framework**: [Next.js](https://nextjs.org/)
 - **Database**: [Elastic App Search](https://www.elastic.co/de/enterprise-search)
-- **I18n**: [i18next & Locize](https://locize.com/)
+- **I18n**: [i18next](https://www.i18next.com/) & [next-i18next](https://github.com/i18next/next-i18next) & [Locize](https://locize.com/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Deployment**: [Vercel](https://vercel.com/)
 
@@ -21,4 +21,4 @@ yarn install
 yarn dev
 ```
 
-Create a `.env` file similar to [`.env.example`](https://github.com/leerob/leerob.io/blob/main/.env.example). You cann use our search API key for testing purposes, as well as the translations from [Locize](https://locize.com/). The provided API key is read-only and can only be used to fetch data.
+Create a `.env` file similar to [`.env.example`](https://github.com/MartinSeeler/ukraine-hilfe-sachsen/blob/main/.env.example). You cann use our search API key for testing purposes, as well as the translations from [Locize](https://locize.com/). The provided API key is read-only and can only be used to fetch data.
