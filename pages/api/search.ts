@@ -14,7 +14,6 @@ export default async function handler(
   const activeValFilters = parseActiveValFiltersFromQuery(req.query);
   const locale = parseLocaleFromQuery(req.query);
   const response = await performSearch(query, activeValFilters, locale);
-  console.log(response);
   res.setHeader(
     "Cache-Control",
     "public, s-maxage=3600, stale-while-revalidate=7200"

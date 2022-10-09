@@ -1,7 +1,6 @@
-// @ts-ignore
 import { useRouter } from "next/router";
 import { ParsedUrlQueryInput } from "querystring";
-import { filter, path, pathOr } from "ramda";
+import { filter, path } from "ramda";
 import { isEmptyString } from "ramda-adjunct";
 import { createContext, useEffect, useState } from "react";
 import useSWR from "swr";
@@ -81,7 +80,6 @@ export const SearchContextProvider: React.FC<{
   );
 
   useEffect(() => {
-    console.log("Response", data);
     if (data) {
       setSearchResults(parseSearchResults(data, locale || "de"));
       setTotalHits(data.meta.page.total_results);
