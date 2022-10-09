@@ -29,6 +29,7 @@ const defaultState = {
   selectedRegion: "" as string | undefined,
   selectedWho: "" as string | undefined,
   selectedWhat: "" as string | undefined,
+  onSerpClick: (docId: string) => {},
 };
 
 const SearchContext = createContext(defaultState);
@@ -40,6 +41,19 @@ const searchParamsToQueryString = (
 ) => {
   const facets = facetsToQuery(activeValFilters);
   return `?q=${query}&${new URLSearchParams(facets).toString()}&l=${locale}`;
+};
+
+const searchParamsToClickString = (
+  query: string,
+  activeValFilters: ActiveValFilters,
+  locale: string,
+  rid: string,
+  did: string
+) => {
+  const facets = facetsToQuery(activeValFilters);
+  return `?q=${query}&${new URLSearchParams(
+    facets
+  ).toString()}&l=${locale}&did=${did}&rid=${rid}`;
 };
 
 export const SearchContextProvider: React.FC<{
@@ -179,6 +193,17 @@ export const SearchContextProvider: React.FC<{
     );
   };
 
+  const onSerpClick = (docId: string) => {
+    const endpoint = `/api/click?${searchParamsToClickString(
+      userquery,
+      activeValFilters,
+      locale || "de",
+      data?.meta.request_id || "unknown",
+      docId
+    )}`;
+    fetch(endpoint);
+  };
+
   return (
     <SearchContext.Provider
       value={{
@@ -196,6 +221,7 @@ export const SearchContextProvider: React.FC<{
         selectedRegion,
         selectedWho,
         selectedWhat,
+        onSerpClick,
       }}
     >
       {children}

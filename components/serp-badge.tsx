@@ -15,7 +15,7 @@ const SerpBadge: FC<{
         "inline-flex items-center text-xs font-medium space-x-1 " + props.colors
       }
     >
-      <props.icon className="h-4 w-4" aria-hidden="true" />
+      <props.icon className="w-4 h-4" aria-hidden="true" />
       <p>{t(`facet_${props.facetId}_value_${props.value}`, props.value)}</p>
     </span>
   );
