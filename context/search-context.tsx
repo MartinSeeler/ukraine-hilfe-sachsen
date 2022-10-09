@@ -46,6 +46,12 @@ export const SearchContextProvider: React.FC<{
   initialResponse?: SearchResponse;
 }> = ({ initialResponse, children }) => {
   const { locale, query, pathname, push } = useRouter();
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    setIsSearching(true);
+  }, [query]);
+
   const [userquery, setQuery] = useState(parseQueryStringFromQuery(query));
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     () => parseActiveValFiltersFromQuery(query)
@@ -70,7 +76,7 @@ export const SearchContextProvider: React.FC<{
     setSelectedRegion(path(["region_country_city", 0], newActiveValFilters));
   }, [query]);
 
-  const { data, isValidating } = useSWR<SearchResponse>(
+  const { data } = useSWR<SearchResponse>(
     `/api/search${searchParamsToQueryString(
       userquery,
       activeValFilters,
@@ -84,6 +90,7 @@ export const SearchContextProvider: React.FC<{
       setSearchResults(parseSearchResults(data, locale || "de"));
       setTotalHits(data.meta.page.total_results);
     }
+    setIsSearching(false);
   }, [data]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(
     initialResponse ? parseSearchResults(initialResponse, locale || "de") : []
@@ -181,7 +188,7 @@ export const SearchContextProvider: React.FC<{
         query: userquery,
         updateQuery,
         locale: locale || "de",
-        isSearching: isValidating,
+        isSearching,
         activeValFilters,
         onResetFacetByKey,
         onValueFacetClick,

@@ -99,11 +99,14 @@ const buildCanonicalUrlPostfix = (
 
 const SocialSeoTags: FC = () => {
   const router = useRouter();
-  const { query, selectedWhat, selectedWho, selectedRegion, response } =
-    useContext(SearchContext);
-  const [totalHits, setTotalHits] = useState(
-    pathOr(0, ["info", "meta", "page", "total_results"], response)
-  );
+  const {
+    query,
+    selectedWhat,
+    totalHits,
+    selectedWho,
+    selectedRegion,
+    response,
+  } = useContext(SearchContext);
 
   const { t } = useTranslation();
 
@@ -119,9 +122,6 @@ const SocialSeoTags: FC = () => {
   );
 
   useEffect(() => {
-    setTotalHits(
-      pathOr(0, ["info", "meta", "page", "total_results"], response)
-    );
     setDescription(getSeoTextOption(selectedRegion, selectedWhat, selectedWho));
     setUrl(
       "https://www.ukraine-hilfe-sachsen.info" +
