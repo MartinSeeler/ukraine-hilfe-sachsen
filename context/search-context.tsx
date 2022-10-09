@@ -48,10 +48,6 @@ export const SearchContextProvider: React.FC<{
   const { locale, query, pathname, push } = useRouter();
   const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    setIsSearching(true);
-  }, [query]);
-
   const [userquery, setQuery] = useState(parseQueryStringFromQuery(query));
   const [activeValFilters, setActiveValFilters] = useState<ActiveValFilters>(
     () => parseActiveValFiltersFromQuery(query)
@@ -101,6 +97,7 @@ export const SearchContextProvider: React.FC<{
 
   const updateQuery = (newQuery: string) => {
     const newQueryObj = isEmptyString(newQuery) ? {} : { q: newQuery };
+    setIsSearching(true);
     setQuery(newQuery);
     push(
       {
@@ -120,6 +117,7 @@ export const SearchContextProvider: React.FC<{
       ...activeValFilters,
       [key]: [],
     };
+    setIsSearching(true);
     setActiveValFilters(newActiveValFilters);
     push(
       {
@@ -138,8 +136,6 @@ export const SearchContextProvider: React.FC<{
   };
 
   const onValueFacetClick = (key: string, value: string) => {
-    // newActiveValFilters is a copy of activeValFilters, where either the value is dropped or added, based
-    // on whether it is already present in the array
     const newActiveValFilters = {
       ...activeValFilters,
       [key]: activeValFilters[key]
@@ -148,6 +144,7 @@ export const SearchContextProvider: React.FC<{
           : [...activeValFilters[key], value]
         : [value],
     };
+    setIsSearching(true);
     setActiveValFilters(newActiveValFilters);
     push(
       {
@@ -166,6 +163,7 @@ export const SearchContextProvider: React.FC<{
   };
 
   const onReset = () => {
+    setIsSearching(true);
     setActiveValFilters({});
     setQuery("");
     push(
