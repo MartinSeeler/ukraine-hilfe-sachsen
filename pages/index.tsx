@@ -1,17 +1,17 @@
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
+import {
+  GetServerSideProps,
+  GetStaticProps,
+  InferGetServerSidePropsType,
+} from "next/types";
 import { FC } from "react";
 import SearchInner from "../components/search-inner";
+import { SearchContextProvider } from "../context/search-context";
+import { performSearch } from "../lib/appsearch";
 import {
-  getClient,
+  parseQueryStringFromQuery,
   parseActiveValFiltersFromQuery,
-  performSearch,
-  SearchContextProvider,
-} from "../context/search-context";
-
-export const config = {
-  amp: "hybrid",
-};
+} from "../lib/search";
 
 export const getServerSideProps: GetServerSideProps = async ({
   locale,
@@ -22,34 +22,31 @@ export const getServerSideProps: GetServerSideProps = async ({
     "Cache-Control",
     "public, s-maxage=3600, stale-while-revalidate=7200"
   );
-  const i18next = await serverSideTranslations(locale || "de", ["translation"]);
-  const client = getClient();
+  const userquery = parseQueryStringFromQuery(query);
   const activeValFilters = parseActiveValFiltersFromQuery(query);
   const response = await performSearch(
-    client,
-    (query.q || "") as string,
+    userquery,
     activeValFilters,
     locale || "de"
   );
+  console.log(response);
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=7200"
+  );
   return {
     props: {
-      ...i18next,
-      activeValFilters,
-      q: query.q || ("" as string),
-      response: JSON.parse(JSON.stringify(response || {})),
+      ...(await serverSideTranslations(locale || "de", ["translation"])),
+      response,
     },
   };
 };
 
-const Search: FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
-  props
-) => {
+const Search: FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
+  response,
+}) => {
   return (
-    <SearchContextProvider
-      defaultQuery={props.q || ""}
-      defaultActiveValFilters={props.activeValFilters || {}}
-      defaultResponse={props.response}
-    >
+    <SearchContextProvider initialResponse={response}>
       <SearchInner />
     </SearchContextProvider>
   );
